@@ -7,5 +7,5 @@
 
 2. Grabner:
 
-- Soll: Requirements, Wireframe, Repo-Setup, FE-Setup
-- Ist:
+- Soll: Requirements, Wireframe Login, Wireframe Dashboard, Repo-Setup, FE-Setup
+- Ist: Requirements, Wireframe Login, Wireframe Dashboard, Wireframe User, Repo-Setup, FE-Setup
