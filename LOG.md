@@ -15,7 +15,9 @@
 1. Gruber:
 
 - Soll: Datenbankplanung, Microsoft OAuth
+- Ist: Datenbankplanung, Microsoft OAuth, Backend Setup, Test Setup, Datenbankimplementierung, User-Routen
 
 2. Grabner
 
 - Soll: Wireframe fertigstellen, Kochrezeptkarte designen
+- Ist: Wireframe fertigstellen, Kochrezeptkarte designen
