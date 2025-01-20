@@ -1,0 +1,7 @@
+services:
+  frontend:
+    build: ./frontend/kochrezepte/
+    volumes:
+      - ./frontend/kochrezepte:/usr/src/frontend/
+    ports:
+      - 5173:5173
