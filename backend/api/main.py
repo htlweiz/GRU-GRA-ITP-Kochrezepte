@@ -5,7 +5,6 @@ from db.session import metadata, engine
 
 from api import users
 
-
 metadata.create_all(engine)
 
 
@@ -19,4 +18,4 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(users.router)
+app.include_router(users.router, tags=["users"])
