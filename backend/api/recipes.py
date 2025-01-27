@@ -175,7 +175,7 @@ async def read_user(recipe_id: uuid.UUID):
     return db_user
 
 
-@router.post("recipes/{recipe_id}/categoriy/{category_id}")
+@router.post("recipes/{recipe_id}/category/{category_id}")
 async def add_recipe_to_category(recipe_id: uuid.UUID, category_id: uuid.UUID):
     """
     Add a recipe to a category.
