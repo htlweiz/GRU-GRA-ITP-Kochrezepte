@@ -38,7 +38,7 @@ class Recipe(Base):
     cookingTime: Mapped[int] = mapped_column(Integer)
     preparationTime: Mapped[int] = mapped_column(Integer)
     imagePath: Mapped[str] = mapped_column(String)
-    userId: Mapped[UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.userId"))
+    userId: Mapped[str] = mapped_column(String, ForeignKey("users.userId"))
 
     user: Mapped["User"] = relationship("User", back_populates="recipes")
     ingredients: Mapped[List["RecipeIngredient"]] = relationship("RecipeIngredient", back_populates="recipe")
@@ -102,7 +102,7 @@ class Rating(Base):
     __tablename__ = "ratings"
 
     recipeId: Mapped[UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("recipes.recipeId"), primary_key=True)
-    userId: Mapped[UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.userId"), primary_key=True)
+    userId: Mapped[str] = mapped_column(String, ForeignKey("users.userId"), primary_key=True)
     stars: Mapped[int] = mapped_column(Integer)
 
     recipe: Mapped["Recipe"] = relationship("Recipe", back_populates="ratings")

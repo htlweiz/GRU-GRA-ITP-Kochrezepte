@@ -13,7 +13,7 @@ class Unit(str, pyenum):
     ZWEIG = "Zweig"
 
 class UserDB(BaseModel):
-    userId: uuid.UUID
+    userId: str
     email: str
     firstName: str
     lastName: str
@@ -24,7 +24,7 @@ class RecipeSchema(BaseModel):
     cookingTime: int
     preparationTime: int
     imagePath: str
-    userId: uuid.UUID
+    userId: str
 
 class RecipeDB(RecipeSchema):
     recipeId: uuid.UUID
@@ -42,7 +42,7 @@ class RecipeIngredientSchema(BaseModel):
     unit: Unit
 
 class RatingSchema(BaseModel):
-    userId: uuid.UUID
+    userId: str
     recipeId: uuid.UUID
     stars: int
 

@@ -1,4 +1,4 @@
-from api.model import UserDB
+from api.model import UserDB, RecipeDB
 from crud import crud
 from fastapi import APIRouter, Depends, HTTPException
 import uuid
@@ -20,7 +20,7 @@ async def validate_token(token: str):
 
 
 @router.post("/users/", response_model=UserDB, status_code=201)
-async def create_user(user: UserDB, token: str = Depends(oauth2_scheme)):
+async def create_user(user: UserDB):
     """
     Create a new user in the database.
 
@@ -34,14 +34,15 @@ async def create_user(user: UserDB, token: str = Depends(oauth2_scheme)):
     Returns:
         User: The created user object.
     """
-    if not validate_token(token):
-        raise HTTPException(status_code=401, detail="Invalid token")
+    
     db_user = await crud.create_user(user)
+    if db_user is None:
+        raise HTTPException(status_code=409, detail="User already exists")
     return db_user
 
 
 @router.get("/users/{user_id}", response_model=UserDB)
-async def read_user(user_id: uuid.UUID, token: str = Depends(oauth2_scheme)):
+async def read_user(user_id: str):
     """
     Retrieve a user by their user ID.
 
@@ -56,8 +57,7 @@ async def read_user(user_id: uuid.UUID, token: str = Depends(oauth2_scheme)):
     Returns:
         dict: The user data if found and authenticated.
     """
-    if not validate_token(token):
-        raise HTTPException(status_code=401, detail="Invalid token")
+    
     db_user = await crud.get_user(user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
@@ -65,7 +65,7 @@ async def read_user(user_id: uuid.UUID, token: str = Depends(oauth2_scheme)):
 
 
 @router.get("/users/", response_model=list[UserDB])
-async def read_users(token: str = Depends(oauth2_scheme)):
+async def read_users():
     """
     Retrieve a list of users from the database.
 
@@ -78,14 +78,13 @@ async def read_users(token: str = Depends(oauth2_scheme)):
     Returns:
         List[User]: A list of user objects retrieved from the database.
     """
-    if not validate_token(token):
-        raise HTTPException(status_code=401, detail="Invalid token")
+    
     db_users = await crud.get_users()
     return db_users
 
 
 @router.put("/users/{user_id}", response_model=UserDB)
-async def update_user(user_id: uuid.UUID, user: UserDB, token: str = Depends(oauth2_scheme)):
+async def update_user(user_id: str, user: UserDB):
     """Updates a user in the database
 
     Args:
@@ -100,8 +99,7 @@ async def update_user(user_id: uuid.UUID, user: UserDB, token: str = Depends(oau
     Returns:
         UserDB: The updated user
     """
-    if not validate_token(token):
-        raise HTTPException(status_code=401, detail="Invalid token")
+    
     db_user = await crud.update_user(user_id, user)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
@@ -109,7 +107,7 @@ async def update_user(user_id: uuid.UUID, user: UserDB, token: str = Depends(oau
 
 
 @router.delete("/users/{user_id}", response_model=UserDB)
-async def delete_user(user_id: uuid.UUID, token: str = Depends(oauth2_scheme)):
+async def delete_user(user_id: str):
     """Deletes a user from the database
 
     Args:
@@ -127,3 +125,25 @@ async def delete_user(user_id: uuid.UUID, token: str = Depends(oauth2_scheme)):
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return db_user
+
+
+@router.get("/users/{user_id}/recipes/", response_model=list[RecipeDB])
+async def read_user_recipes(user_id: str):
+    """Retrieves a list of recipes for a user
+
+    Args:
+        user_id (uuid.UUID): The id of the user
+        token (str, optional): The validation token
+
+    Raises:
+        HTTPException: If the user is not found (status code 404)
+        HTTPException: If the token is invalid (status code 401)
+
+    Returns:
+        list[dict]: A list of recipes for the user
+    """
+    
+    recipes = await crud.get_user_recipes(user_id)
+    if recipes is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return recipes
