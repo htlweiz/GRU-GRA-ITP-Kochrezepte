@@ -1,7 +1,7 @@
 from db.session import session
 from db.model import User, Recipe, Ingredient, PreparationStep, RecipeIngredient, Category, RecipeCategory, Rating, Unit
 import uuid
-from api.model import UserDB, RecipeDB
+from api.model import UserDB, RecipeDB, IngredientDB, PreparationStepDB, CategoryDB, RatingSchema, IngredientSchema, PreparationStepSchema, CategorySchema, RecipeSchema
 
 async def create_user(user: UserDB):
     ex_user = session.query(User).filter(User.userId == user.userId).first()
@@ -61,7 +61,7 @@ async def get_user_ratings(user_id: str):
 #-------------------------Recipes-------------------------	
 
 
-async def create_recipe(recipe: RecipeDB):
+async def create_recipe(recipe: RecipeSchema):
     db_recipe = Recipe(
         title=recipe.title,
         description=recipe.description,
@@ -197,11 +197,45 @@ async def remove_ingredient_from_recipe(recipeId: uuid.UUID, ingredientId: uuid.
 #-------------------------Ingredients----------------------------
 
 
+async def create_ingredient(ingredient: IngredientSchema):
+    ex_ingredient = session.query(Ingredient).filter(Ingredient.name == ingredient.name).first()
+    if ex_ingredient is not None:
+        return None
+    db_ingredient = Ingredient(
+        name=ingredient.name
+    )
+    session.add(db_ingredient)
+    session.commit()
+    return db_ingredient
+
+
+async def get_ingredient(ingredient_id: uuid.UUID):
+    return session.query(Ingredient).filter(Ingredient.ingredientId == ingredient_id).first()
+
+async def get_ingredients():
+    return session.query(Ingredient).all()
+
+async def update_ingredient(ingredient_id: uuid.UUID, ingredient: IngredientSchema):
+    db_ingredient = session.query(Ingredient).filter(Ingredient.ingredientId == ingredient_id).first()
+    if db_ingredient is None:
+        return None
+    db_ingredient.name = ingredient.name
+    session.commit()
+    return db_ingredient
+
+
+async def delete_ingredient(ingredient_id: uuid.UUID):
+    db_ingredient = session.query(Ingredient).filter(Ingredient.ingredientId == ingredient_id).first()
+    if db_ingredient is None:
+        return None
+    session.delete(db_ingredient)
+    session.commit()
+    return db_ingredient
 
 #-------------------------Categories----------------------------
 
 
-async def create_category(category: Category):
+async def create_category(category: CategorySchema):
     ex_category = session.query(Category).filter(Category.name == category.name).first()
     if ex_category is not None:
         return None

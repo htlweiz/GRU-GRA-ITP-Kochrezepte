@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from db.session import metadata, engine
 
-from api import users, recipes, categories
+from api import users, recipes, categories, ingredients
 
 metadata.create_all(engine)
 
@@ -22,3 +22,4 @@ app.add_middleware(
 app.include_router(users.router, tags=["users"])
 app.include_router(recipes.router, tags=["recipes"])
 app.include_router(categories.router, tags=["categories"])
+app.include_router(ingredients.router, tags=["ingredients"])
