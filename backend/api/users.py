@@ -1,4 +1,4 @@
-from api.model import UserDB, RecipeDB
+from api.model import UserDB, RecipeDB, RatingSchema
 from crud import crud
 from fastapi import APIRouter, Depends, HTTPException
 import uuid
@@ -147,3 +147,25 @@ async def read_user_recipes(user_id: str):
     if recipes is None:
         raise HTTPException(status_code=404, detail="User not found")
     return recipes
+
+
+@router.get("/users/{user_id}/ratings/", response_model=list[RatingSchema])
+async def read_user_ratings(user_id: str):
+    """Retrieves a list of ratings for a user
+
+    Args:
+        user_id (uuid.UUID): The id of the user
+        token (str, optional): The validation token
+
+    Raises:
+        HTTPException: If the user is not found (status code 404)
+        HTTPException: If the token is invalid (status code 401)
+
+    Returns:
+        list[dict]: A list of ratings for the user
+    """
+    
+    ratings = await crud.get_user_ratings(user_id)
+    if ratings is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return ratings
