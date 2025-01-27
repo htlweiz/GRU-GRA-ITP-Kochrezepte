@@ -21,3 +21,15 @@
 
 - Soll: Wireframe fertigstellen, Kochrezeptkarte designen
 - Ist: Wireframe fertigstellen, Kochrezeptkarte designen
+
+## 27.1
+
+1. Gruber
+
+- Soll: Rezept-Routen&CRUD (Zutaten & Kategorien)
+- Ist:
+
+2. Grabner
+
+- Soll: Login Page Design und Funktionalität
+- Ist:
