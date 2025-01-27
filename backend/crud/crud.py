@@ -51,6 +51,13 @@ async def get_user_recipes(user_id: str):
     return db_user.recipes
 
 
+async def get_user_ratings(user_id: str):
+    db_user = session.query(User).filter(User.userId == user_id).first()
+    if db_user is None:
+        return None
+    return db_user.ratings
+
+
 #-------------------------Recipes-------------------------	
 
 
@@ -133,6 +140,54 @@ async def get_recipe_ratings(recipeId: uuid.UUID):
     return recipe.ratings
 
 
+async def add_recipe_to_category(recipeId: uuid.UUID, categoryId: uuid.UUID):
+    recipe = session.query(Recipe).filter(Recipe.recipeId == recipeId).first()
+    category = session.query(Category).filter(Category.categoryId == categoryId).first()
+    if not recipe or not category:
+        return None
+    recipe_category = RecipeCategory(
+        recipeId=recipeId,
+        categoryId=categoryId
+    )
+    session.add(recipe_category)
+    session.commit()
+    return recipe_category
+
+
+async def remove_recipe_from_category(recipeId: uuid.UUID, categoryId: uuid.UUID):
+    recipe_category = session.query(RecipeCategory).filter(RecipeCategory.recipeId == recipeId, RecipeCategory.categoryId == categoryId).first()
+    if not recipe_category:
+        return None
+    session.delete(recipe_category)
+    session.commit()
+    return recipe_category
+
+
+async def add_ingredient_to_recipe(recipeId: uuid.UUID, ingredientId: uuid.UUID, amount: int, unit: str):
+    recipe = session.query(Recipe).filter(Recipe.recipeId == recipeId).first()
+    ingredient = session.query(Ingredient).filter(Ingredient.ingredientId == ingredientId).first()
+    if not recipe or not ingredient:
+        return None
+    recipe_ingredient = RecipeIngredient(
+        recipeId=recipeId,
+        ingredientId=ingredientId,
+        amount=amount,
+        unit=unit
+    )
+    session.add(recipe_ingredient)
+    session.commit()
+    return recipe_ingredient
+
+
+async def remove_ingredient_from_recipe(recipeId: uuid.UUID, ingredientId: uuid.UUID):
+    recipe_ingredient = session.query(RecipeIngredient).filter(RecipeIngredient.recipeId == recipeId, RecipeIngredient.ingredientId == ingredientId).first()
+    if not recipe_ingredient:
+        return None
+    session.delete(recipe_ingredient)
+    session.commit()
+    return recipe_ingredient
+
+
 #-------------------------Preparation Steps-------------------------
 
 
@@ -182,5 +237,13 @@ async def delete_category(category_id: uuid.UUID):
     session.delete(db_category)
     session.commit()
     return db_category
+
+
+async def get_category_recipes(categoryId: uuid.UUID):
+    category = session.query(Category).filter(Category.categoryId == categoryId).first()
+    if not category:
+        return None
+    return category.recipes
+
 
 #-------------------------Ratings----------------------------

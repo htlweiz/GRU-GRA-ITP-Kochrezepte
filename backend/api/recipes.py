@@ -173,3 +173,71 @@ async def read_user(recipe_id: uuid.UUID):
     
     db_user = await crud.get_recipe_user(recipe_id)
     return db_user
+
+
+@router.post("recipes/{recipe_id}/categoriy/{category_id}")
+async def add_recipe_to_category(recipe_id: uuid.UUID, category_id: uuid.UUID):
+    """
+    Add a recipe to a category.
+
+    Args:
+        recipe_id (uuid.UUID): The unique identifier of the recipe to add to the category.
+        category_id (uuid.UUID): The unique identifier of the category to add the recipe to.
+    
+    Returns:
+        dict: The updated recipe object.
+    """
+
+    db_recipe = await crud.add_recipe_to_category(recipe_id, category_id)
+    return db_recipe
+
+
+@router.delete("/recipes/{recipe_id}/category/{category_id}")
+async def remove_recipe_from_category(recipe_id: uuid.UUID, category_id: uuid.UUID):
+    """
+    Remove a recipe from a category.
+
+    Args:
+        recipe_id (uuid.UUID): The unique identifier of the recipe to remove from the category.
+        category_id (uuid.UUID): The unique identifier of the category to remove the recipe from.
+    
+    Returns:
+        dict: The updated recipe object.
+    """
+
+    db_recipe = await crud.remove_recipe_from_category(recipe_id, category_id)
+    return db_recipe
+
+
+@router.post("/recipes/{recipe_id}/indgredient/{ingredientId}")
+async def add_recipe_ingredient(recipe_id: uuid.UUID, ingredientId: uuid.UUID):
+    """
+    Add an ingredient to a recipe.
+
+    Args:
+        recipe_id (uuid.UUID): The unique identifier of the recipe to add the ingredient to.
+        ingredientId (uuid.UUID): The unique identifier of the ingredient to add to the recipe.
+    
+    Returns:
+        dict: The updated recipe object.
+    """
+
+    db_recipe = await crud.add_ingredient_to_recipe(recipe_id, ingredientId)
+    return db_recipe
+
+
+@router.delete("/recipes/{recipe_id}/ingredient/{ingredientId}")
+async def remove_recipe_ingredient(recipe_id: uuid.UUID, ingredientId: uuid.UUID):
+    """
+    Remove an ingredient from a recipe.
+
+    Args:
+        recipe_id (uuid.UUID): The unique identifier of the recipe to remove the ingredient from.
+        ingredientId (uuid.UUID): The unique identifier of the ingredient to remove from the recipe.
+    
+    Returns:
+        dict: The updated recipe object.
+    """
+
+    db_recipe = await crud.remove_ingredient_from_recipe(recipe_id, ingredientId)
+    return db_recipe
