@@ -42,7 +42,7 @@ async def create_user(user: UserDB, token: str = Depends(oauth2_scheme)):
 
 
 @router.get("/users/{user_id}", response_model=UserDB)
-async def read_user(user_id: str):
+async def read_user(user_id: str, token: str = Depends(oauth2_scheme)):
     """
     Retrieve a user by their user ID.
 
@@ -57,6 +57,9 @@ async def read_user(user_id: str):
     Returns:
         dict: The user data if found and authenticated.
     """
+
+    if not await validate_token(token):
+        raise HTTPException(status_code=401, detail="Invalid token")
     
     db_user = await crud.get_user(user_id)
     if db_user is None:
@@ -65,7 +68,7 @@ async def read_user(user_id: str):
 
 
 @router.get("/users/", response_model=list[UserDB])
-async def read_users():
+async def read_users(token: str = Depends(oauth2_scheme)):
     """
     Retrieve a list of users from the database.
 
@@ -78,13 +81,16 @@ async def read_users():
     Returns:
         List[User]: A list of user objects retrieved from the database.
     """
+
+    if not await validate_token(token):
+        raise HTTPException(status_code=401, detail="Invalid token")
     
     db_users = await crud.get_users()
     return db_users
 
 
 @router.put("/users/{user_id}", response_model=UserDB)
-async def update_user(user_id: str, user: UserDB):
+async def update_user(user_id: str, user: UserDB, token: str = Depends(oauth2_scheme)):
     """Updates a user in the database
 
     Args:
@@ -99,6 +105,9 @@ async def update_user(user_id: str, user: UserDB):
     Returns:
         UserDB: The updated user
     """
+
+    if not await validate_token(token):
+        raise HTTPException(status_code=401, detail="Invalid token")
     
     db_user = await crud.update_user(user_id, user)
     if db_user is None:
@@ -107,7 +116,7 @@ async def update_user(user_id: str, user: UserDB):
 
 
 @router.delete("/users/{user_id}", response_model=UserDB)
-async def delete_user(user_id: str):
+async def delete_user(user_id: str, token: str = Depends(oauth2_scheme)):
     """Deletes a user from the database
 
     Args:
@@ -121,6 +130,10 @@ async def delete_user(user_id: str):
     Returns:
         UserDB: The deleted user
     """
+
+    if not await validate_token(token):
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
     db_user = await crud.delete_user(user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
@@ -128,7 +141,7 @@ async def delete_user(user_id: str):
 
 
 @router.get("/users/{user_id}/recipes/", response_model=list[RecipeDB])
-async def read_user_recipes(user_id: str):
+async def read_user_recipes(user_id: str, token: str = Depends(oauth2_scheme)):
     """Retrieves a list of recipes for a user
 
     Args:
@@ -142,6 +155,9 @@ async def read_user_recipes(user_id: str):
     Returns:
         list[dict]: A list of recipes for the user
     """
+
+    if not await validate_token(token):
+        raise HTTPException(status_code=401, detail="Invalid token")
     
     recipes = await crud.get_user_recipes(user_id)
     if recipes is None:
@@ -150,7 +166,7 @@ async def read_user_recipes(user_id: str):
 
 
 @router.get("/users/{user_id}/ratings/", response_model=list[RatingSchema])
-async def read_user_ratings(user_id: str):
+async def read_user_ratings(user_id: str, token: str = Depends(oauth2_scheme)):
     """Retrieves a list of ratings for a user
 
     Args:
@@ -164,6 +180,9 @@ async def read_user_ratings(user_id: str):
     Returns:
         list[dict]: A list of ratings for the user
     """
+
+    if not await validate_token(token):
+        raise HTTPException(status_code=401, detail="Invalid token")
     
     ratings = await crud.get_user_ratings(user_id)
     if ratings is None:
