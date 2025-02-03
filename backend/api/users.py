@@ -1,26 +1,23 @@
 from api.model import UserDB, RecipeDB, RatingSchema
 from crud import crud
 from fastapi import APIRouter, Depends, HTTPException
-import uuid
 import httpx
 from fastapi.security import OAuth2PasswordBearer
-import os
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-TOKEN_VALIDATION_URL=os.getenv("TOKEN_VALIDATION_URL")
 
 async def validate_token(token: str):
     async with httpx.AsyncClient() as client:
         response = await client.get(
-            TOKEN_VALIDATION_URL,
+            "https://graph.microsoft.com/v1.0/me",
             headers={"Authorization": f"Bearer {token}"}
         )
         return response.status_code == 200
 
 
 @router.post("/users/", response_model=UserDB, status_code=201)
-async def create_user(user: UserDB):
+async def create_user(user: UserDB, token: str = Depends(oauth2_scheme)):
     """
     Create a new user in the database.
 
@@ -34,6 +31,9 @@ async def create_user(user: UserDB):
     Returns:
         User: The created user object.
     """
+
+    if not await validate_token(token):
+        raise HTTPException(status_code=401, detail="Invalid token")
     
     db_user = await crud.create_user(user)
     if db_user is None:
