@@ -2,6 +2,7 @@ from db.session import session
 from db.model import User, Recipe, Ingredient, PreparationStep, RecipeIngredient, Category, RecipeCategory, Rating, Unit
 import uuid
 from api.model import UserDB, RecipeDB, IngredientDB, PreparationStepDB, CategoryDB, RatingSchema, IngredientSchema, PreparationStepSchema, CategorySchema, RecipeSchema
+from fastapi_pagination import paginate
 
 async def create_user(user: UserDB):
     ex_user = session.query(User).filter(User.userId == user.userId).first()
@@ -22,7 +23,7 @@ async def get_user(user_id: str):
     return session.query(User).filter(User.userId == user_id).first()
 
 async def get_users():
-    return session.query(User).all()
+    return paginate(session.query(User).all())
 
 async def update_user(user_id: str, user: User):
     db_user = session.query(User).filter(User.userId == user_id).first()

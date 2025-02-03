@@ -3,6 +3,8 @@ from crud import crud
 from fastapi import APIRouter, Depends, HTTPException
 import httpx
 from fastapi.security import OAuth2PasswordBearer
+from fastapi_pagination import Page
+
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -34,7 +36,7 @@ async def create_user(user: UserDB, token: str = Depends(oauth2_scheme)):
 
     if not await validate_token(token):
         raise HTTPException(status_code=401, detail="Invalid token")
-    
+
     db_user = await crud.create_user(user)
     if db_user is None:
         raise HTTPException(status_code=409, detail="User already exists")
@@ -67,8 +69,8 @@ async def read_user(user_id: str, token: str = Depends(oauth2_scheme)):
     return db_user
 
 
-@router.get("/users/", response_model=list[UserDB])
-async def read_users(token: str = Depends(oauth2_scheme)):
+@router.get("/users/", response_model=Page[UserDB])
+async def read_users():
     """
     Retrieve a list of users from the database.
 
@@ -82,9 +84,6 @@ async def read_users(token: str = Depends(oauth2_scheme)):
         List[User]: A list of user objects retrieved from the database.
     """
 
-    if not await validate_token(token):
-        raise HTTPException(status_code=401, detail="Invalid token")
-    
     db_users = await crud.get_users()
     return db_users
 

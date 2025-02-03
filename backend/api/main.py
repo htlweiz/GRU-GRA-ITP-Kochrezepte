@@ -5,11 +5,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from db.session import metadata, engine
 
 from api import users, recipes, categories, ingredients, preparation_steps, ratings
+from fastapi_pagination import add_pagination
 
 metadata.create_all(engine)
 
 
 app = FastAPI()
+add_pagination(app)
 
 app.add_middleware(
     CORSMiddleware,
