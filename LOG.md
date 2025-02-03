@@ -39,10 +39,10 @@
 1. Gruber
 
 - Soll: Preparation Steps Routen fertigstellen, generell durchschauen ob noch Routen fehlen, Routen-Tests
-- Ist:
+- Ist: Preparation Steps und Rating Routen fertig, User tests, pagination bei users
   
 2. Grabner
 
 - Soll: Homepage Design und Funktionalität
-- Ist:
+- Ist: Homepage Design und Funktionalität, Rezeptkarten Design
  
