@@ -5,7 +5,7 @@
 
   color-scheme: light dark;
   color: #000;
-  background-color: #e8f9fd;
+  background-color: white;
 
   
   display: flex;
@@ -23,7 +23,6 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin: 0;
 }
 
 a {
@@ -38,7 +37,6 @@ a:hover {
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
-  margin: 10px;
 }
 h2 {
   line-height: 1.1;
@@ -48,7 +46,6 @@ h2 {
 p {
   font-size: 1.2em;
   line-height: 1.5;
-  margin: 0 0 1em;
   text-align: left;
 }
 button:hover {
@@ -63,16 +60,21 @@ button:focus-visible {
   border-color: white;
   background-color: white;
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 2px 4px 0 rgba(0, 0, 0, 0.1);
-  flex: 1;
   margin: 1em;
-  padding: 1em;
   min-width: 20%;
+  max-width: 30%;
+  height: fit-content;
+  flex: 1;
+  justify-content: stretch;
+  transition-duration: 200ms;
+  border-radius: 5px;
 }
 
 
 .card:hover
 {
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 4px 8px 0 rgba(0, 0, 0, 0.1);
+  scale: 1.01;
 }
 
 

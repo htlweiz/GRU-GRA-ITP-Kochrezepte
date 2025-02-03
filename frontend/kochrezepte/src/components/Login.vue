@@ -16,9 +16,12 @@
 <script>
 import * as msal from '@azure/msal-browser';
 import axios from 'axios';
+import { useToast } from 'vue-toast-notification';
+
+const $toast = useToast();
 
 
-const APIURL = `https://172.31.182.187:8002/users/`;
+const APIURL = `https://172.31.179.240:8002/users/`;
 
 export default {
   data() {
@@ -63,41 +66,15 @@ export default {
         localStorage.setItem('email', email);
 
         this.UserExists = false;
-        await this.getUser(userId, token);
-        if (!this.UserExists) {
-            await this.createUser(userId, name, email, token);
-        }
+        
+        await this.createUser(userId, name, email, token);
 
         
     },
-
-    async getUser(id, token)
-    {
-        try
-        {
-            let res = await axios.get(APIURL + id, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            if (res.status === 200) {
-                this.UserExists = true;
-                this.loggedIn = true;
-                this.$router.push('/home');
-                return true;
-            }
-        }
-        catch (error)
-        {
-            if (error.response.status === 404){
-                this.UserExists = false;
-                return false;
-            }
-        }
-    },
     async createUser(id, name, email, token)
     {
+      try
+      {
         let res = await axios.post(
             APIURL,
             {
@@ -111,13 +88,31 @@ export default {
                 Authorization: `Bearer ${token}`,
                 },
             });
-        
-        if (res.status === 201) {
-            this.UserExists = true;
-            this.loggedIn = true;
-            this.$router.push('/home');
-            return true;
-        }
+
+            if (res.status === 201)
+            {
+                this.loggedIn = true;
+                $toast.success('Login erfolgreich', { duration: 5000 });
+                this.$router.push('/home'); 
+                return true;
+            }
+
+          }
+          catch (error)
+          {
+            if (error.response.status === 409)
+            {
+                this.UserExists = true;
+                this.loggedIn = true;
+                $toast.success('Login erfolgreich', { duration: 5000 });
+                this.$router.push('/home'); 
+                return true;
+            }
+
+            $toast.error('Login fehlgeschlagen', { duration: 5000 });
+          }
+
+          
     },
 
     checkLoginStatus() {
