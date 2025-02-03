@@ -27,9 +27,22 @@
 1. Gruber
 
 - Soll: Rezept-Routen&CRUD (Zutaten & Kategorien)
-- Ist: Rezept-Routen&CRUD (Zutaten & Kategorien), HTTPS Include
+- Ist: Rezept-Routen&CRUD (Zutaten & Kategorien + Preparation Steps), HTTPS Include
 
 2. Grabner
 
 - Soll: Login Page Design und Funktionalität
 - Ist: Login Page Design und Funktionalität
+
+## 3.2
+
+1. Gruber
+
+- Soll: Preparation Steps Routen fertigstellen, generell durchschauen ob noch Routen fehlen, Routen-Tests
+- Ist:
+  
+2. Grabner
+
+- Soll: Homepage Design und Funktionalität
+- Ist:
+ 
