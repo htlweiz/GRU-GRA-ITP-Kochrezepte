@@ -191,7 +191,43 @@ async def remove_ingredient_from_recipe(recipeId: uuid.UUID, ingredientId: uuid.
 #-------------------------Preparation Steps-------------------------
 
 
+async def create_preparation_step(step: PreparationStepSchema):
+    db_step = PreparationStep(
+        recipeId=step.recipeId,
+        stepNumber=step.stepNumber,
+        description=step.description
+    )
+    session.add(db_step)
+    session.commit()
+    return db_step
 
+
+async def get_preparation_step(step_id: uuid.UUID):
+    return session.query(PreparationStep).filter(PreparationStep.stepId == step_id).first()
+
+
+async def get_preparation_steps():
+    return session.query(PreparationStep).all()
+
+
+async def update_preparation_step(step_id: uuid.UUID, step: PreparationStep):
+    db_step = session.query(PreparationStep).filter(PreparationStep.stepId == step_id).first()
+    if db_step is None:
+        return None
+    db_step.recipeId = step.recipeId
+    db_step.stepNumber = step.stepNumber
+    db_step.description = step.description
+    session.commit()
+    return db_step
+
+
+async def delete_preparation_step(step_id: uuid.UUID):
+    db_step = session.query(PreparationStep).filter(PreparationStep.stepId == step_id).first()
+    if db_step is None:
+        return None
+    session.delete(db_step)
+    session.commit()
+    return db_step
 
 
 #-------------------------Ingredients----------------------------
@@ -281,3 +317,31 @@ async def get_category_recipes(categoryId: uuid.UUID):
 
 
 #-------------------------Ratings----------------------------
+
+
+async def create_rating(rating: RatingSchema):
+    db_rating = Rating(
+        rating=rating.stars,
+        userId=rating.userId,
+        recipeId=rating.recipeId
+    )
+    session.add(db_rating)
+    session.commit()
+    return db_rating
+
+
+async def get_rating(recipe_id: uuid.UUID, user_id: str):
+    return session.query(Rating).filter(Rating.recipeId == recipe_id, Rating.userId == user_id).first()
+
+
+async def get_ratings():
+    return session.query(Rating).all()
+
+
+async def update_rating(recipe_id: uuid.UUID, user_id: str, rating: Rating):
+    db_rating = session.query(Rating).filter(Rating.recipeId == recipe_id, Rating.userId == user_id).first()
+    if db_rating is None:
+        return None
+    db_rating.stars = rating.stars
+    session.commit()
+    return db_rating
