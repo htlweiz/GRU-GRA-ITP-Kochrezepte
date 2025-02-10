@@ -7,3 +7,4 @@ httpx~=0.26.0
 pytest~=7.4.0
 python-jose~=3.3.0
 fastapi-pagination~=0.12.34
+pytest-cov
