@@ -305,7 +305,7 @@ def test14_read_preparation_steps(monkeypatch, test_app):
     assert response.json() == steps
 
 
-def test_15_read_preparation_steps_invalid_token(test_app):
+def test15_read_preparation_steps_invalid_token(test_app):
     recipe_id = str(uuid.uuid4())
 
     response = test_app.get(f"/recipes/{recipe_id}/preparation_steps/", headers={"Content-Type": "application/json", "Authorization": "Bearer invalid"})
