@@ -70,7 +70,7 @@ async def read_user(user_id: str, token: str = Depends(oauth2_scheme)):
 
 
 @router.get("/users/", response_model=Page[UserDB])
-async def read_users():
+async def read_users(token: str = Depends(oauth2_scheme)):
     """
     Retrieve a list of users from the database.
 
@@ -83,7 +83,9 @@ async def read_users():
     Returns:
         List[User]: A list of user objects retrieved from the database.
     """
-
+    if not await validate_token(token):
+        raise HTTPException(status_code=401, detail="Invalid token")
+        
     db_users = await crud.get_users()
     return db_users
 

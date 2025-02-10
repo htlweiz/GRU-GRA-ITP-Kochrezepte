@@ -164,8 +164,8 @@ def test07_read_users(monkeypatch, test_app):
     assert response.status_code == 200
     assert response.json() == Page(items=users_list, page=1, pages=None, size=2, total=2).dict()
 
-"""
-def test08_read_user_invalid_token(test_app):
+
+def test08_read_users_invalid_token(test_app):
     token = "invalid_token"
 
     response = test_app.get(f"/users/", headers={"Content-Type": "application/json", "Authorization": f"Bearer {token}"})
@@ -200,7 +200,7 @@ def test09_update_user(monkeypatch, test_app):
 
     assert response.status_code == 200
     assert response.json() == user
-"""
+
 
 def test10_update_user_invalid_token(test_app):
     user = {"userId": str(uuid.uuid4()), "firstName": "John", "lastName": "Doe", "email": "test@gmail.com"}

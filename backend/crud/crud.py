@@ -80,7 +80,7 @@ async def get_recipe(recipe_id: uuid.UUID):
     return session.query(Recipe).filter(Recipe.recipeId == recipe_id).first()
 
 async def get_recipes():
-    return session.query(Recipe).all()
+    return paginate(session.query(Recipe).all())
 
 
 async def update_recipe(recipe_id: uuid.UUID, recipe: Recipe):
@@ -121,10 +121,10 @@ async def get_recipe_preparation_steps(recipeId: uuid.UUID):
 
 
 async def get_recipe_ingredients(recipeId: uuid.UUID):
-    recipe = session.query(Recipe).filter(Recipe.recipeId == recipeId).first()
-    if not recipe:
+    recipe_ing = session.query(RecipeIngredient).filter(Recipe.recipeId == recipeId).first()
+    if not recipe_ing:
         return None
-    return recipe.ingredients
+    return recipe_ing
 
 
 async def get_recipe_categories(recipeId: uuid.UUID):
