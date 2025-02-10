@@ -46,3 +46,14 @@
 - Soll: Homepage Design und Funktionalität
 - Ist: Homepage Design und Funktionalität, Rezeptkarten Design
  
+## 10.2
+
+1. Gruber
+
+- Soll: Unit tests implementieren, eventuell spezielle Routen besprechen
+- Ist:
+  
+2. Grabner
+
+- Soll: Kochrezepte Detailseite implementieren, eventuell spezielle Routen besprechen
+- Ist:
