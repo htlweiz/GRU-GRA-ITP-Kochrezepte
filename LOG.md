@@ -51,9 +51,9 @@
 1. Gruber
 
 - Soll: Unit tests implementieren, eventuell spezielle Routen besprechen
-- Ist:
+- Ist: Unit tests für user und recipes fertig, test coverage tool implementiert
   
 2. Grabner
 
 - Soll: Kochrezepte Detailseite implementieren, eventuell spezielle Routen besprechen
-- Ist:
+- Ist: Kochrezepte Detailseite implementieren
