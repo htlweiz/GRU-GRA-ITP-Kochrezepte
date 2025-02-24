@@ -57,3 +57,15 @@
 
 - Soll: Kochrezepte Detailseite implementieren, eventuell spezielle Routen besprechen
 - Ist: Kochrezepte Detailseite implementieren
+
+## 11.2
+
+1. Gruber
+
+- Soll: Unit tests categories, ingredients, ratings, preparation steps, eventuell spezielle Routen besprechen
+- Ist:
+
+2. Grabner
+
+- Soll: Kochrezepte Detailseite implementieren, eventuell spezielle Routen besprechen
+- Ist:
