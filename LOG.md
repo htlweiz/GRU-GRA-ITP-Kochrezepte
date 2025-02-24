@@ -58,7 +58,7 @@
 - Soll: Kochrezepte Detailseite implementieren, eventuell spezielle Routen besprechen
 - Ist: Kochrezepte Detailseite implementieren
 
-## 11.2
+## 24.2
 
 1. Gruber
 
