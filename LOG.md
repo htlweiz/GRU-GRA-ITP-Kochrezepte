@@ -63,9 +63,9 @@
 1. Gruber
 
 - Soll: Unit tests categories, ingredients, ratings, preparation steps, eventuell spezielle Routen besprechen
-- Ist:
+- Ist: Unit tests fpr categories, spezielle Routen recipes, ingredients & prep steps
 
 2. Grabner
 
 - Soll: Kochrezepte Detailseite implementieren, eventuell spezielle Routen besprechen
-- Ist:
+- Ist: Kochrezepte Detailseite implementieren +  API Integration
