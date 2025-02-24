@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Login from '../components/Login.vue';
 import Home from '../components/Home.vue';
+import RecipeDetailView from '../components/RecipeDetail.vue';
 
 const routes = [
   {
@@ -14,6 +15,12 @@ const routes = [
   {
     path: '/',
     redirect: '/login'
+  },
+  {
+    path: '/recipe/:id',
+    component: RecipeDetailView,
+    props: true
+
   }
 ];
 

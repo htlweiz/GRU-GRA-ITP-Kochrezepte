@@ -18,6 +18,8 @@
       <User color="#2e3a59"/>
       <h4>{{ creator }}</h4>
     </div>
+
+    <button class="button" @click="navigateToRecipe">View Recipe</button>
     
     
     </div>
@@ -28,20 +30,26 @@ import '../style.css'
 import StarRating from 'vue-star-rating'
 import { User, Clock } from 'lucide-vue-next'
 
-defineProps({
+const props = defineProps({
+  uuid: String,
   picUrl: String,
   recipeName: String,
   recipeDesc: String,
   creator: String,
   cookingTime: Number,
+  preparationTime: Number,
   stars: Number,
   ratingsCount: Number
-})
+});
 
 const truncate = (text, length) => {
   return text.length > length ? text.substring(0, length) + '...' : text;
 }
 
+const navigateToRecipe = () => {
+  window.location.href = '/recipe/' + props.uuid;
+
+}
 </script>
 
 <style scoped>
@@ -94,6 +102,18 @@ const truncate = (text, length) => {
   align-items: center;
   padding-left: 10px;
   color: #2e3a59;
+}
+
+.button {
+  background-color: #2e3a59;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+  margin-left: 10px;
+  margin-bottom: 5px;
 }
 
 

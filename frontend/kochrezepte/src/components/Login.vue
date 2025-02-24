@@ -20,8 +20,7 @@ import { useToast } from 'vue-toast-notification';
 
 const $toast = useToast();
 
-
-const APIURL = `https://172.31.179.240:8002/users/`;
+const APIURL = import.meta.env.VITE_BACKEND_API_URL + `/users/`;
 
 export default {
   data() {
