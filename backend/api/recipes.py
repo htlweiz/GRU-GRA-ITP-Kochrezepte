@@ -1,4 +1,4 @@
-from api.model import RecipeDB, UserDB, PreparationStepDB, IngredientDB, CategoryDB, RatingSchema, RecipeSchema, RecipeIngredientSchema
+from api.model import RecipeDB, UserDB, PreparationStepDB, IngredientDB, CategoryDB, RatingSchema, RecipeSchema, RecipeIngredientSchema, Unit, PublicRecipeSchema, PublicRecipeIngredientSchema
 from crud import crud
 from fastapi import APIRouter, Depends, HTTPException
 import uuid
@@ -13,7 +13,7 @@ router = APIRouter()
 
 
 @router.post("/recipes/", response_model=RecipeDB, status_code=201)
-async def create_recipe(recipe: RecipeSchema, token: str = Depends(oauth2_scheme)):
+async def create_recipe(recipe: RecipeSchema):
     """
     Create a new recipe in the database.
 
@@ -24,14 +24,11 @@ async def create_recipe(recipe: RecipeSchema, token: str = Depends(oauth2_scheme
         Recipe: The created recipe object.
     """
 
-    if not await validate_token(token):
-        raise HTTPException(status_code=401, detail="Invalid token")
-    
     db_recipe = await crud.create_recipe(recipe)
     return db_recipe
 
-@router.get("/recipes/{recipe_id}", response_model=RecipeDB)
-async def read_recipe(recipe_id: uuid.UUID, token: str = Depends(oauth2_scheme)):
+@router.get("/recipes/{recipe_id}", response_model=PublicRecipeSchema)
+async def read_recipe(recipe_id: uuid.UUID):
     """
     Retrieve a recipe by its recipe ID.
 
@@ -42,9 +39,6 @@ async def read_recipe(recipe_id: uuid.UUID, token: str = Depends(oauth2_scheme))
         dict: The recipe data if found.
     """
 
-    if not await validate_token(token):
-        raise HTTPException(status_code=401, detail="Invalid token")
-    
     db_recipe = await crud.get_recipe(recipe_id)
     if db_recipe is None:
         raise HTTPException(status_code=404, detail="Recipe not found")
@@ -52,7 +46,7 @@ async def read_recipe(recipe_id: uuid.UUID, token: str = Depends(oauth2_scheme))
 
 
 @router.get("/recipes/", response_model=Page[RecipeDB])
-async def read_recipes(token: str = Depends(oauth2_scheme)):
+async def read_recipes():
     """
     Retrieve a list of recipes from the database.
 
@@ -62,10 +56,7 @@ async def read_recipes(token: str = Depends(oauth2_scheme)):
     Returns:
         list[dict]: A list of recipe data.
     """
-
-    if not await validate_token(token):
-        raise HTTPException(status_code=401, detail="Invalid token")
-    
+   
     db_recipes = await crud.get_recipes()
     return db_recipes
 
@@ -85,7 +76,7 @@ async def update_recipe(recipe_id: uuid.UUID, recipe: RecipeDB, token: str = Dep
 
     if not await validate_token(token):
         raise HTTPException(status_code=401, detail="Invalid token")
-    
+
     db_recipe = await crud.update_recipe(recipe_id, recipe)
     if db_recipe is None:
         raise HTTPException(status_code=404, detail="Recipe not found")
@@ -114,7 +105,7 @@ async def delete_recipe(recipe_id: uuid.UUID, token: str = Depends(oauth2_scheme
 
 
 @router.get("/recipes/{recipe_id}/preparation_steps/", response_model=list[PreparationStepDB])
-async def read_preparation_steps(recipe_id: uuid.UUID, token: str = Depends(oauth2_scheme)):
+async def read_preparation_steps(recipe_id: uuid.UUID):
     """
     Retrieve a list of preparation steps for a recipe.
 
@@ -125,15 +116,12 @@ async def read_preparation_steps(recipe_id: uuid.UUID, token: str = Depends(oaut
         list[dict]: A list of preparation steps for the recipe.
     """
 
-    if not await validate_token(token):
-        raise HTTPException(status_code=401, detail="Invalid token")
-    
     db_steps = await crud.get_recipe_preparation_steps(recipe_id)
     return db_steps
 
 
-@router.get("/recipes/{recipe_id}/ingredients/", response_model=list[RecipeIngredientSchema])
-async def read_ingredients(recipe_id: uuid.UUID, token: str = Depends(oauth2_scheme)):
+@router.get("/recipes/{recipe_id}/ingredients/", response_model=list[PublicRecipeIngredientSchema])
+async def read_ingredients(recipe_id: uuid.UUID):
     """
     Retrieve a list of ingredients for a recipe.
 
@@ -144,9 +132,6 @@ async def read_ingredients(recipe_id: uuid.UUID, token: str = Depends(oauth2_sch
         list[dict]: A list of ingredients for the recipe.
     """
 
-    if not await validate_token(token):
-        raise HTTPException(status_code=401, detail="Invalid token")
-    
     db_ingredients = await crud.get_recipe_ingredients(recipe_id)
     return db_ingredients
 
@@ -209,7 +194,7 @@ async def read_user(recipe_id: uuid.UUID, token: str = Depends(oauth2_scheme)):
 
 
 @router.post("/recipes/{recipe_id}/category/{category_id}")
-async def add_recipe_to_category(recipe_id: uuid.UUID, category_id: uuid.UUID, token: str = Depends(oauth2_scheme)):
+async def add_recipe_to_category(recipe_id: uuid.UUID, category_id: uuid.UUID):
     """
     Add a recipe to a category.
 
@@ -220,9 +205,6 @@ async def add_recipe_to_category(recipe_id: uuid.UUID, category_id: uuid.UUID, t
     Returns:
         dict: The updated recipe object.
     """
-
-    if not await validate_token(token):
-        raise HTTPException(status_code=401, detail="Invalid token")
 
     db_recipe = await crud.add_recipe_to_category(recipe_id, category_id)
     return db_recipe
@@ -249,7 +231,7 @@ async def remove_recipe_from_category(recipe_id: uuid.UUID, category_id: uuid.UU
 
 
 @router.post("/recipes/{recipe_id}/ingredient/{ingredientId}")
-async def add_recipe_ingredient(recipe_id: uuid.UUID, ingredientId: uuid.UUID, token: str = Depends(oauth2_scheme)):
+async def add_recipe_ingredient(recipe_id: uuid.UUID, ingredientId: uuid.UUID, amount: int, unit: Unit):
     """
     Add an ingredient to a recipe.
 
@@ -261,10 +243,7 @@ async def add_recipe_ingredient(recipe_id: uuid.UUID, ingredientId: uuid.UUID, t
         dict: The updated recipe object.
     """
 
-    if not await validate_token(token):
-        raise HTTPException(status_code=401, detail="Invalid token")
-
-    db_recipe = await crud.add_ingredient_to_recipe(recipe_id, ingredientId)
+    db_recipe = await crud.add_ingredient_to_recipe(recipe_id, ingredientId, amount, unit)
     return db_recipe
 
 
@@ -286,3 +265,16 @@ async def remove_recipe_ingredient(recipe_id: uuid.UUID, ingredientId: uuid.UUID
 
     db_recipe = await crud.remove_ingredient_from_recipe(recipe_id, ingredientId)
     return db_recipe
+
+
+@router.get("/recipes/public/", response_model=Page[PublicRecipeSchema])
+async def get_public_recipes():
+    """
+    Retrieve a list of public recipes from the database.
+
+    Returns:
+        list[dict]: A list of public recipe data.
+    """
+
+    db_recipes = await crud.get_public_recipes()
+    return db_recipes

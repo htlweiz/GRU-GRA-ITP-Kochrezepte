@@ -1,7 +1,7 @@
 from db.session import session
 from db.model import User, Recipe, Ingredient, PreparationStep, RecipeIngredient, Category, RecipeCategory, Rating, Unit
 import uuid
-from api.model import UserDB, RecipeDB, IngredientDB, PreparationStepDB, CategoryDB, RatingSchema, IngredientSchema, PreparationStepSchema, CategorySchema, RecipeSchema
+from api.model import UserDB, RecipeDB, IngredientDB, PreparationStepDB, CategoryDB, RatingSchema, IngredientSchema, PreparationStepSchema, CategorySchema, RecipeSchema, PublicRecipeSchema
 from fastapi_pagination import paginate
 
 async def create_user(user: UserDB):
@@ -77,7 +77,20 @@ async def create_recipe(recipe: RecipeSchema):
 
 
 async def get_recipe(recipe_id: uuid.UUID):
-    return session.query(Recipe).filter(Recipe.recipeId == recipe_id).first()
+    recipe = session.query(Recipe).filter(Recipe.recipeId == recipe_id).first()
+    recipe_dict = {
+            "recipeId": recipe.recipeId,
+            "title": recipe.title,
+            "description": recipe.description,
+            "cookingTime": recipe.cookingTime,
+            "preparationTime": recipe.preparationTime,
+            "imagePath": recipe.imagePath,
+            "userId": recipe.userId,
+            "stars": sum([rating.stars for rating in recipe.ratings]) / len(recipe.ratings) if len(recipe.ratings) != 0 else 0,
+            "ratingAmount": len(recipe.ratings),
+            "userName": recipe.user.firstName + " " + recipe.user.lastName
+        }
+    return recipe_dict
 
 async def get_recipes():
     return paginate(session.query(Recipe).all())
@@ -121,9 +134,17 @@ async def get_recipe_preparation_steps(recipeId: uuid.UUID):
 
 
 async def get_recipe_ingredients(recipeId: uuid.UUID):
-    recipe_ing = session.query(RecipeIngredient).filter(Recipe.recipeId == recipeId).first()
-    if not recipe_ing:
+    recipe = session.query(Recipe).filter(Recipe.recipeId == recipeId).first()
+    if not recipe:
         return None
+    recipe_ing = []
+    for ing in recipe.ingredients:
+        recipe_ing.append({
+            "ingredientId": ing.ingredient.ingredientId,
+            "recipeId": recipe.recipeId,
+            "name": ing.ingredient.name,
+            "amount": ing.amount,
+            "unit": ing.unit})
     return recipe_ing
 
 
@@ -188,6 +209,25 @@ async def remove_ingredient_from_recipe(recipeId: uuid.UUID, ingredientId: uuid.
     session.commit()
     return recipe_ingredient
 
+async def get_public_recipes():
+    recipes = session.query(Recipe).all()
+    res_list = []
+    for recipe in recipes:
+        recipe_dict = {
+            "recipeId": recipe.recipeId,
+            "title": recipe.title,
+            "description": recipe.description,
+            "cookingTime": recipe.cookingTime,
+            "preparationTime": recipe.preparationTime,
+            "imagePath": recipe.imagePath,
+            "userId": recipe.userId,
+            "stars": sum([rating.stars for rating in recipe.ratings]) / len(recipe.ratings) if len(recipe.ratings) != 0 else 0,
+            "ratingAmount": len(recipe.ratings),
+            "userName": recipe.user.firstName + " " + recipe.user.lastName
+        }
+        res_list.append(recipe_dict)
+    return paginate(res_list)
+    
 
 #-------------------------Preparation Steps-------------------------
 
@@ -322,7 +362,7 @@ async def get_category_recipes(categoryId: uuid.UUID):
 
 async def create_rating(rating: RatingSchema):
     db_rating = Rating(
-        rating=rating.stars,
+        stars=rating.stars,
         userId=rating.userId,
         recipeId=rating.recipeId
     )

@@ -63,3 +63,11 @@ class CategoryDB(CategorySchema):
 class RecipeCategorySchema(BaseModel):
     recipeId: uuid.UUID
     categoryId: uuid.UUID
+
+class PublicRecipeSchema(RecipeDB):
+    stars: float
+    ratingAmount: int
+    userName: str
+
+class PublicRecipeIngredientSchema(RecipeIngredientSchema):
+    name: str

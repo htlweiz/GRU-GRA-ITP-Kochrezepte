@@ -9,7 +9,7 @@ from api.users import oauth2_scheme, validate_token
 router = APIRouter()
 
 @router.post("/categories/", response_model=CategoryDB, status_code=201)
-async def create_category(category: CategorySchema):
+async def create_category(category: CategorySchema, token: str = Depends(oauth2_scheme)):
     """
     Create a new category in the database.
 
@@ -19,6 +19,9 @@ async def create_category(category: CategorySchema):
     Returns:
         Category: The created category object.
     """
+
+    if not await validate_token(token):
+        raise HTTPException(status_code=401, detail="Invalid token")
     
     db_category = await crud.create_category(category)
     if not db_category:
@@ -37,7 +40,7 @@ async def read_category(category_id: uuid.UUID):
     Returns:
         dict: The category data if found.
     """
-    
+
     db_category = await crud.get_category(category_id)
     if not db_category:
         raise HTTPException(status_code=404, detail="Category not found")
@@ -45,20 +48,23 @@ async def read_category(category_id: uuid.UUID):
 
 
 @router.get("/categories/", response_model=list[CategoryDB])
-async def read_categories():
+async def read_categories(token: str = Depends(oauth2_scheme)):
     """
     Retrieve a list of categories from the database.
 
     Returns:
         list[dict]: A list of category data.
     """
+
+    if not await validate_token(token):
+        raise HTTPException(status_code=401, detail="Invalid token")
     
     db_categories = await crud.get_categories()
     return db_categories
 
 
 @router.put("/categories/{category_id}", response_model=CategoryDB)
-async def update_category(category_id: uuid.UUID, category: CategorySchema):
+async def update_category(category_id: uuid.UUID, category: CategorySchema, token: str = Depends(oauth2_scheme)):
     """
     Update a category in the database.
 
@@ -69,6 +75,9 @@ async def update_category(category_id: uuid.UUID, category: CategorySchema):
     Returns:
         Category: The updated category object.
     """
+
+    if not await validate_token(token):
+        raise HTTPException(status_code=401, detail="Invalid token")
     
     db_category = await crud.update_category(category_id, category)
     if not db_category:
@@ -77,7 +86,7 @@ async def update_category(category_id: uuid.UUID, category: CategorySchema):
 
 
 @router.delete("/categories/{category_id}", response_model=CategoryDB)
-async def delete_category(category_id: uuid.UUID):
+async def delete_category(category_id: uuid.UUID, token: str = Depends(oauth2_scheme)):
     """
     Delete a category from the database.
 
@@ -87,6 +96,9 @@ async def delete_category(category_id: uuid.UUID):
     Returns:
         Category: The deleted category object.
     """
+
+    if not await validate_token(token):
+        raise HTTPException(status_code=401, detail="Invalid token")
     
     db_category = await crud.delete_category(category_id)
     if not db_category:

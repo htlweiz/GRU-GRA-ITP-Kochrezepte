@@ -1,8 +1,6 @@
 import json
-from api.model import RecipeDB, RecipeSchema
 from jose import jwt
 
-import api.users as users
 import api.recipes as recipes
 import uuid
 from fastapi_pagination import Page

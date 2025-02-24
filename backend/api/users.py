@@ -19,7 +19,7 @@ async def validate_token(token: str):
 
 
 @router.post("/users/", response_model=UserDB, status_code=201)
-async def create_user(user: UserDB, token: str = Depends(oauth2_scheme)):
+async def create_user(user: UserDB):
     """
     Create a new user in the database.
 
@@ -33,9 +33,6 @@ async def create_user(user: UserDB, token: str = Depends(oauth2_scheme)):
     Returns:
         User: The created user object.
     """
-
-    if not await validate_token(token):
-        raise HTTPException(status_code=401, detail="Invalid token")
 
     db_user = await crud.create_user(user)
     if db_user is None:
