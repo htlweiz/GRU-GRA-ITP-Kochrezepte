@@ -24,8 +24,8 @@ async def create_rating(rating: RatingSchema):
     return db_rating
 
 
-@router.get("/ratings/{rating_id}", response_model=RatingSchema)
-async def read_rating(rating_id: uuid.UUID):
+@router.get("/ratings/{recipeId}/{userId}", response_model=RatingSchema)
+async def read_rating(recipeId: uuid.UUID, userId: str):
     """
     Retrieve a rating by its rating ID.
 
@@ -36,7 +36,7 @@ async def read_rating(rating_id: uuid.UUID):
         dict: The rating data if found.
     """
     
-    db_rating = await crud.get_rating(rating_id)
+    db_rating = await crud.get_rating(recipeId, userId)
     if db_rating is None:
         raise HTTPException(status_code=404, detail="Rating not found")
     return db_rating
@@ -54,13 +54,14 @@ async def read_ratings():
     db_ratings = await crud.get_ratings()
     return db_ratings
 
-@router.put("/ratings/{rating_id}", response_model=RatingSchema)
-async def update_rating(recipeId: uuid.UUID, userId: uuid.UUID, rating: RatingSchema):
+@router.put("/ratings/{recipeId}/{userId}", response_model=RatingSchema)
+async def update_rating(recipeId: uuid.UUID, userId: str, rating: RatingSchema):
     """
     Update a rating in the database.
 
     Args:
-        rating_id (uuid.UUID): The unique identifier of the rating to update.
+        recipeId (uuid.UUID): The unique identifier of the recipe of the rating to update.
+        userId (uuid.UUID): The unique identifier of the user of the rating to update.
         rating (Rating): The rating object containing updated rating details.
 
     Returns:
@@ -68,6 +69,25 @@ async def update_rating(recipeId: uuid.UUID, userId: uuid.UUID, rating: RatingSc
     """
     
     db_rating = await crud.update_rating(recipeId, userId, rating)
+    if db_rating is None:
+        raise HTTPException(status_code=404, detail="Rating not found")
+    return db_rating
+
+
+@router.delete("/ratings/{recipeId}/{userId}", response_model=RatingSchema)
+async def delete_rating(recipeId: uuid.UUID, userId: str):
+    """
+    Delete a rating from the database.
+    
+    Args:
+        recipe_id (uuid.UUID): The unique identifier of the recipe of the rating to delete.
+        user_id (uuid.UUID): The unique identifier of the user of the rating to delete.
+
+    Returns:
+        Rating: The deleted rating object.
+    """
+
+    db_rating = await crud.delete_rating(recipeId, userId)
     if db_rating is None:
         raise HTTPException(status_code=404, detail="Rating not found")
     return db_rating
