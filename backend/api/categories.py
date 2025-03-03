@@ -120,5 +120,3 @@ async def read_category_recipes(category_id: uuid.UUID):
     
     db_recipes = await crud.get_category_recipes(category_id)
     return db_recipes
-
-

@@ -221,3 +221,18 @@ def test13_delete_category_invalid_token(monkeypatch, test_app):
 
     assert response.status_code == 401
     assert response.json() == {"detail": "Invalid token"}
+
+
+def test14_get_recipes_for_category(monkeypatch, test_app):
+    cat_id = str(uuid.uuid4())
+    recipes = [{"recipeId": str(uuid.uuid4()), "title": "Test Recipe", "description": "test", "cookingTime": 10, "preparationTime": 10, "imagePath": "test.jpg", "userId": "test"}]
+
+    async def mock_get_category_recipes(category_id):
+        return recipes
+
+    monkeypatch.setattr(categories.crud, "get_category_recipes", mock_get_category_recipes)
+
+    response = test_app.get(f"/categories/{cat_id}/recipes/", headers={"Content-Type": "application/json"})
+
+    assert response.status_code == 200
+    assert response.json() == recipes

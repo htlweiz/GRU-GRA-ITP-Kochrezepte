@@ -21,7 +21,7 @@ async def create_ingredient(ingredient: IngredientSchema, token: str = Depends(o
         Ingredient: The created ingredient object.
     """
 
-    if not validate_token(token):
+    if not await validate_token(token):
         raise HTTPException(status_code=401, detail="Invalid token")
     
     db_ingredient = await crud.create_ingredient(ingredient)

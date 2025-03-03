@@ -370,7 +370,20 @@ def test20_remove_recipe_from_category(monkeypatch, test_app):
     assert response.status_code == 200
 
 
-def test21_add_ingredient_to_recipe(monkeypatch, test_app):
+def test21_remove_recipe_from_category_invalid_token(monkeypatch, test_app):
+
+    async def mock_validate_token(token):
+        return None
+    
+    monkeypatch.setattr(recipes, "validate_token", mock_validate_token)
+
+    response = test_app.delete(f"/recipes/{str(uuid.uuid4())}/category/{str(uuid.uuid4())}", headers={"Content-Type": "application/json", "Authorization": "Bearer invalid"})
+
+    assert response.status_code == 401
+    assert response.json() == {"detail": "Invalid token"}
+
+
+def test22_add_ingredient_to_recipe(monkeypatch, test_app):
     recipe_id = str(uuid.uuid4())
     ingredient_id = str(uuid.uuid4())
 
@@ -385,7 +398,7 @@ def test21_add_ingredient_to_recipe(monkeypatch, test_app):
     assert response.status_code == 200
 
 
-def test22_remove_ingredient_from_recipe(monkeypatch, test_app):
+def test23_remove_ingredient_from_recipe(monkeypatch, test_app):
     recipe_id = str(uuid.uuid4())
     ingredient_id = str(uuid.uuid4())
 
@@ -404,8 +417,22 @@ def test22_remove_ingredient_from_recipe(monkeypatch, test_app):
     assert response.status_code == 200
 
 
-def test23_remove_ingredient_from_recipe_invalid_token(test_app):
+def test24_remove_ingredient_from_recipe_invalid_token(test_app):
     response = test_app.delete(f"/recipes/{str(uuid.uuid4())}/ingredient/{str(uuid.uuid4())}", headers={"Content-Type": "application/json", "Authorization": "Bearer invalid"})
 
     assert response.status_code == 401
     assert response.json() == {"detail": "Invalid token"}
+
+
+def test25_get_public_recipes(monkeypatch, test_app):
+    recipes_list = [{"recipeId": str(uuid.uuid4()), "title": "Test Recipe", "description": "Test Description", "cookingTime": 30, "preparationTime": 15, "imagePath": "test.jpg", "userId": "testuser", "stars": 3, "ratingAmount": 1, "userName": "chef"}]
+    
+    async def mock_get_public_recipes():
+        return Page(items=recipes_list, page=1, pages=None, size=10, total=1)
+    
+    monkeypatch.setattr(recipes.crud, "get_public_recipes", mock_get_public_recipes)
+    
+    response = test_app.get("/recipes/public/?page=1&size=2", headers={"Content-Type": "application/json"})
+
+    assert response.status_code == 200
+    assert response.json() == Page(items=recipes_list, page=1, pages=None, size=10, total=1).dict()

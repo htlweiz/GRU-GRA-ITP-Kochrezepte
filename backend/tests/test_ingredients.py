@@ -24,7 +24,40 @@ def test01_create_ingredient(monkeypatch, test_app):
     assert response.json() == res_ing
 
 
-def test02_read_ingredient(monkeypatch, test_app):
+def test02_create_ingredient_already_exists(monkeypatch, test_app):
+    ing = {"name": "Test Ingredient"}
+
+    async def mock_validate_token(token):
+        return 200
+    
+    monkeypatch.setattr(ingredients, "validate_token", mock_validate_token)
+
+    async def mock_create_ingredient(ingredient):
+        return None
+    
+    monkeypatch.setattr(ingredients.crud, "create_ingredient", mock_create_ingredient)
+
+    response = test_app.post("/ingredients/", data=json.dumps(ing), headers={"Content-Type": "application/json", "Authorization": "Bearer token"})
+
+    assert response.status_code == 409
+    assert response.json() == {"detail": "Ingredient already exists"}
+
+
+def test03_create_ingredient_invalid_token(monkeypatch, test_app):
+    ing = {"name": "Test Ingredient"}
+
+    async def mock_validate_token(token):
+        return None
+    
+    monkeypatch.setattr(ingredients, "validate_token", mock_validate_token)
+
+    response = test_app.post("/ingredients/", data=json.dumps(ing), headers={"Content-Type": "application/json", "Authorization": "Bearer token"})
+
+    assert response.status_code == 401
+    assert response.json() == {"detail": "Invalid token"}
+
+
+def test04_read_ingredient(monkeypatch, test_app):
     ing_id = str(uuid.uuid4())
     ing = {"ingredientId": ing_id, "name": "Test Ingredient"}
 
@@ -39,7 +72,7 @@ def test02_read_ingredient(monkeypatch, test_app):
     assert response.json() == ing
 
 
-def test03_read_ingredient_not_found(monkeypatch, test_app):
+def test05_read_ingredient_not_found(monkeypatch, test_app):
     ing_id = str(uuid.uuid4())
 
     async def mock_get_ingredient(ingredient_id):
@@ -53,7 +86,7 @@ def test03_read_ingredient_not_found(monkeypatch, test_app):
     assert response.json() == {"detail": "Ingredient not found"}
 
 
-def test04_read_ingredients(monkeypatch, test_app):
+def test06_read_ingredients(monkeypatch, test_app):
     ings = [{"ingredientId": str(uuid.uuid4()), "name": "Test Ingredient"}]
 
     async def mock_get_ingredients():
@@ -67,7 +100,7 @@ def test04_read_ingredients(monkeypatch, test_app):
     assert response.json() == ings
 
 
-def test05_update_ingredient(monkeypatch, test_app):
+def test07_update_ingredient(monkeypatch, test_app):
     ing_id = str(uuid.uuid4())
     ing = {"name": "Test Ingredient"}
     res_ing = {"ingredientId": ing_id, "name": "Test Ingredient"}
@@ -83,7 +116,7 @@ def test05_update_ingredient(monkeypatch, test_app):
     assert response.json() == res_ing
 
 
-def test06_update_ingredient_not_found(monkeypatch, test_app):
+def test08_update_ingredient_not_found(monkeypatch, test_app):
     ing_id = str(uuid.uuid4())
     ing = {"name": "Test Ingredient"}
 
@@ -98,7 +131,7 @@ def test06_update_ingredient_not_found(monkeypatch, test_app):
     assert response.json() == {"detail": "Ingredient not found"}
 
 
-def test07_delete_ingredient(monkeypatch, test_app):
+def test09_delete_ingredient(monkeypatch, test_app):
     ing_id = str(uuid.uuid4())
     ing = {"ingredientId": ing_id, "name": "Test Ingredient"}
 
@@ -113,7 +146,7 @@ def test07_delete_ingredient(monkeypatch, test_app):
     assert response.json() == ing
 
 
-def test08_delete_ingredient_not_found(monkeypatch, test_app):
+def test10_delete_ingredient_not_found(monkeypatch, test_app):
     ing_id = str(uuid.uuid4())
 
     async def mock_delete_ingredient(ingredient_id):
