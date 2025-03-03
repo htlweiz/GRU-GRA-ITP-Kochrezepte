@@ -5,7 +5,7 @@
       <li><router-link to="/home">Home</router-link></li>
       <li><router-link to="/contact">Contact</router-link></li>
       <li v-if="!isLoginPage && !loggedIn"><router-link to="/login">Login</router-link></li>
-      <li v-if="loggedIn"><router-link to="/profile"><User/></router-link></li>
+      <li v-if="loggedIn"><router-link :to="link"><User/></router-link></li>
     </ul>
   </nav>
 </template>
@@ -18,6 +18,15 @@ import { User } from 'lucide-vue-next';
 const route = useRoute();
 const isLoginPage = computed(() => route.path === '/login');
 const loggedIn = computed(() => localStorage.getItem('token') !== null);
+const userId = computed(() => localStorage.getItem('userId'));
+
+const link = computed(() => {
+  if (loggedIn.value) {
+    return `/profile/${userId.value}`;
+  }
+  return '/login';
+});
+
 </script>
 
 <style scoped>
