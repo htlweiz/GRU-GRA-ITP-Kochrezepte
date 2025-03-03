@@ -59,6 +59,15 @@ async def get_user_ratings(user_id: str):
     return db_user.ratings
 
 
+async def delete_rating(recipe_id: uuid.UUID, user_id: str):
+    db_rating = session.query(Rating).filter(Rating.recipeId == recipe_id, Rating.userId == user_id).first()
+    if db_rating is None:
+        return None
+    session.delete(db_rating)
+    session.commit()
+    return db_rating
+
+
 #-------------------------Recipes-------------------------	
 
 
@@ -211,6 +220,26 @@ async def remove_ingredient_from_recipe(recipeId: uuid.UUID, ingredientId: uuid.
 
 async def get_public_recipes():
     recipes = session.query(Recipe).all()
+    res_list = []
+    for recipe in recipes:
+        recipe_dict = {
+            "recipeId": recipe.recipeId,
+            "title": recipe.title,
+            "description": recipe.description,
+            "cookingTime": recipe.cookingTime,
+            "preparationTime": recipe.preparationTime,
+            "imagePath": recipe.imagePath,
+            "userId": recipe.userId,
+            "stars": sum([rating.stars for rating in recipe.ratings]) / len(recipe.ratings) if len(recipe.ratings) != 0 else 0,
+            "ratingAmount": len(recipe.ratings),
+            "userName": recipe.user.firstName + " " + recipe.user.lastName
+        }
+        res_list.append(recipe_dict)
+    return paginate(res_list)
+
+
+async def get_public_recipes_user(userId: str):
+    recipes = session.query(Recipe).filter(Recipe.userId == userId).all()
     res_list = []
     for recipe in recipes:
         recipe_dict = {

@@ -278,3 +278,16 @@ async def get_public_recipes():
 
     db_recipes = await crud.get_public_recipes()
     return db_recipes
+
+
+@router.get("/recipes/public/{userId}", response_model=Page[PublicRecipeSchema])
+async def get_public_recipes(userId: str):
+    """
+    Retrieve a list of public recipes from the database.
+
+    Returns:
+        list[dict]: A list of public recipe data.
+    """
+
+    db_recipes = await crud.get_public_recipes_user(userId)
+    return db_recipes
