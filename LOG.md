@@ -69,3 +69,15 @@
 
 - Soll: Kochrezepte Detailseite implementieren, eventuell spezielle Routen besprechen
 - Ist: Kochrezepte Detailseite implementieren +  API Integration
+
+## 03.03
+
+1. Gruber
+
+- Soll: Unit tests ingredients, ratings, preparation steps, spezielle Routen
+- Ist:
+  
+2. Grabner
+
+- Soll: User Profile Page
+- Ist:
