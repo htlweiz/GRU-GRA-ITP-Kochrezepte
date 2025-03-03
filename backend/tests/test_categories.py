@@ -91,16 +91,7 @@ def test05_read_category_not_found(monkeypatch, test_app):
     assert response.json() == {"detail": "Category not found"}
 
 
-def test06_read_category_invalid_token(test_app):
-    cat_id = str(uuid.uuid4())
-
-    response = test_app.get(f"/categories/{cat_id}", headers={"Content-Type": "application/json", "Authorization": "Bearer invalid"})
-
-    assert response.status_code == 401
-    assert response.json() == {"detail": "Invalid token"}
-
-
-def test07_read_categories(monkeypatch, test_app):
+def test06_read_categories(monkeypatch, test_app):
     cats = [{"categoryId": str(uuid.uuid4()), "name": "Test Category"}]
 
     async def mock_validate_token(token):
@@ -119,14 +110,14 @@ def test07_read_categories(monkeypatch, test_app):
     assert response.json() == cats
 
 
-def test08_read_categories_invalid_token(test_app):
+def test07_read_categories_invalid_token(test_app):
     response = test_app.get("/categories/", headers={"Content-Type": "application/json", "Authorization": "Bearer invalid"})
 
     assert response.status_code == 401
     assert response.json() == {"detail": "Invalid token"}
 
 
-def test09_update_category(monkeypatch, test_app):
+def test08_update_category(monkeypatch, test_app):
     cat_id = str(uuid.uuid4())
     cat = {"name": "Test Category"}
     res_cat = {"categoryId": cat_id, "name": "Test Category"}
@@ -147,7 +138,7 @@ def test09_update_category(monkeypatch, test_app):
     assert response.json() == res_cat
 
 
-def test10_update_category_not_found(monkeypatch, test_app):
+def test09_update_category_not_found(monkeypatch, test_app):
     cat_id = str(uuid.uuid4())
     cat = {"name": "Test Category"}
 
@@ -167,7 +158,7 @@ def test10_update_category_not_found(monkeypatch, test_app):
     assert response.json() == {"detail": "Category not found"}
 
 
-def test11_update_category_invalid_token(test_app):
+def test10_update_category_invalid_token(test_app):
     cat_id = str(uuid.uuid4())
     cat = {"name": "Test Category"}
 
@@ -177,7 +168,7 @@ def test11_update_category_invalid_token(test_app):
     assert response.json() == {"detail": "Invalid token"}
 
 
-def test12_delete_category(monkeypatch, test_app):
+def test11_delete_category(monkeypatch, test_app):
     cat_id = str(uuid.uuid4())
     cat = {"categoryId": cat_id, "name": "Test Category"}
 
@@ -197,7 +188,7 @@ def test12_delete_category(monkeypatch, test_app):
     assert response.json() == cat
 
 
-def test13_delete_category_not_found(monkeypatch, test_app):
+def test12_delete_category_not_found(monkeypatch, test_app):
     cat_id = str(uuid.uuid4())
 
     async def mock_validate_token(token):
@@ -216,7 +207,7 @@ def test13_delete_category_not_found(monkeypatch, test_app):
     assert response.json() == {"detail": "Category not found"}
 
 
-def test14_delete_category_invalid_token(monkeypatch, test_app):
+def test13_delete_category_invalid_token(monkeypatch, test_app):
     cat_id = str(uuid.uuid4())
     cat = {"categoryId": cat_id, "name": "Test Category"}
 

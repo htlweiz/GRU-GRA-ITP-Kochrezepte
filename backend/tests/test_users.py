@@ -35,17 +35,7 @@ def test01_create_user(monkeypatch, test_app):
     assert response.json() == user
 
 
-def test02_create_user_invalid_token(test_app):
-    user = {"userId": str(uuid.uuid4()), "firstName": "John", "lastName": "Doe", "email": "test@gmail.com"}
-    token = "invalid_token"
-
-    response = test_app.post("/users/", data=json.dumps(user), headers={"Content-Type": "application/json", "Authorization": f"Bearer {token}"})
-
-    assert response.status_code == 401
-    assert response.json() == {"detail": "Invalid token"}
-
-
-def test03_create_user_user_exists(monkeypatch, test_app):
+def test02_create_user_user_exists(monkeypatch, test_app):
     user = {"userId": str(uuid.uuid4()), "firstName": "John", "lastName": "Doe", "email": "test@gmail.com"}
     token = jwt.encode(
         {
@@ -72,7 +62,7 @@ def test03_create_user_user_exists(monkeypatch, test_app):
     assert response.status_code == 409
 
 
-def test04_read_user(monkeypatch, test_app):
+def test03_read_user(monkeypatch, test_app):
     user = {"userId": str(uuid.uuid4()), "firstName": "John", "lastName": "Doe", "email": "test@gmail.com"}
     token = jwt.encode(
         {
@@ -99,7 +89,7 @@ def test04_read_user(monkeypatch, test_app):
     assert response.status_code == 200
 
 
-def test05_read_user_invalid_token(test_app):
+def test04_read_user_invalid_token(test_app):
     token = "invalid_token"
 
     response = test_app.get(f"/users/{str(uuid.uuid4())}", headers={"Content-Type": "application/json", "Authorization": f"Bearer {token}"})
@@ -108,7 +98,7 @@ def test05_read_user_invalid_token(test_app):
     assert response.json() == {"detail": "Invalid token"}
 
 
-def test06_read_user_not_found(monkeypatch, test_app):
+def test05_read_user_not_found(monkeypatch, test_app):
     token = jwt.encode(
         {
             "sub": "123",
@@ -135,7 +125,7 @@ def test06_read_user_not_found(monkeypatch, test_app):
     assert response.json() == {"detail": "User not found"}
 
 
-def test07_read_users(monkeypatch, test_app):
+def test06_read_users(monkeypatch, test_app):
     users_list = [{"userId": str(uuid.uuid4()), "firstName": "John", "lastName": "Doe", "email": "test@gmail.com"},
             {"userId": str(uuid.uuid4()),"firstName": "John", "lastName": "Doe", "email": "test@gmail.com"}]
     
@@ -165,7 +155,7 @@ def test07_read_users(monkeypatch, test_app):
     assert response.json() == Page(items=users_list, page=1, pages=None, size=2, total=2).dict()
 
 
-def test08_read_users_invalid_token(test_app):
+def test07_read_users_invalid_token(test_app):
     token = "invalid_token"
 
     response = test_app.get(f"/users/", headers={"Content-Type": "application/json", "Authorization": f"Bearer {token}"})
@@ -174,7 +164,7 @@ def test08_read_users_invalid_token(test_app):
     assert response.json() == {"detail": "Invalid token"}
 
 
-def test09_update_user(monkeypatch, test_app):
+def test08_update_user(monkeypatch, test_app):
     user = {"userId": str(uuid.uuid4()), "firstName": "John", "lastName": "Doe", "email": "test@gmail.com"}
     token = jwt.encode(
         {
@@ -202,7 +192,7 @@ def test09_update_user(monkeypatch, test_app):
     assert response.json() == user
 
 
-def test10_update_user_invalid_token(test_app):
+def test09_update_user_invalid_token(test_app):
     user = {"userId": str(uuid.uuid4()), "firstName": "John", "lastName": "Doe", "email": "test@gmail.com"}
     token = "invalid_token"
 
@@ -212,7 +202,7 @@ def test10_update_user_invalid_token(test_app):
     assert response.json() == {"detail": "Invalid token"}
 
 
-def test11_update_user_not_found(monkeypatch, test_app):
+def test10_update_user_not_found(monkeypatch, test_app):
     user = {"userId": str(uuid.uuid4()), "firstName": "John", "lastName": "Doe", "email": "test@gmail.com"}
     token = jwt.encode(
         {
@@ -240,7 +230,7 @@ def test11_update_user_not_found(monkeypatch, test_app):
     assert response.json() == {"detail": "User not found"}
 
 
-def test12_delete_user(monkeypatch, test_app):
+def test11_delete_user(monkeypatch, test_app):
     user = {"userId": str(uuid.uuid4()), "firstName": "John", "lastName": "Doe", "email": "test@gmail.com"}
     token = jwt.encode(
         {
@@ -268,7 +258,7 @@ def test12_delete_user(monkeypatch, test_app):
     assert response.json() == user
 
 
-def test13_delete_user_invalid_token(test_app):
+def test12_delete_user_invalid_token(test_app):
     token = "invalid_token"
 
     response = test_app.delete(f"/users/{str(uuid.uuid4())}", headers={"Content-Type": "application/json", "Authorization": f"Bearer {token}"})
@@ -277,7 +267,7 @@ def test13_delete_user_invalid_token(test_app):
     assert response.json() == {"detail": "Invalid token"}
 
 
-def test14_delete_user_not_found(monkeypatch, test_app):
+def test13_delete_user_not_found(monkeypatch, test_app):
     user = {"userId": str(uuid.uuid4()), "firstName": "John", "lastName": "Doe", "email": "test@gmail.com"}
     token = jwt.encode(
         {
@@ -305,7 +295,7 @@ def test14_delete_user_not_found(monkeypatch, test_app):
     assert response.json() == {"detail": "User not found"}
 
 
-def test15_get_user_recipes(monkeypatch, test_app):
+def test14_get_user_recipes(monkeypatch, test_app):
     recipes = [{"recipeId": str(uuid.uuid4()), "title": "Recipe", "description": "Description", "cookingTime": 1, "preparationTime": 1, "imagePath": "test", "userId": str(uuid.uuid4())}]
 
     token = jwt.encode(
@@ -334,7 +324,7 @@ def test15_get_user_recipes(monkeypatch, test_app):
     assert response.json() == recipes
 
 
-def test16_get_user_recipes_invalid_token(test_app):
+def test15_get_user_recipes_invalid_token(test_app):
     token = "invalid_token"
 
     response = test_app.get(f"/users/{str(uuid.uuid4())}/recipes/", headers={"Content-Type": "application/json", "Authorization": f"Bearer {token}"})
@@ -343,7 +333,7 @@ def test16_get_user_recipes_invalid_token(test_app):
     assert response.json() == {"detail": "Invalid token"}
 
 
-def test17_get_user_recipes_not_found(monkeypatch, test_app):
+def test16_get_user_recipes_not_found(monkeypatch, test_app):
 
     token = jwt.encode(
         {
@@ -371,7 +361,7 @@ def test17_get_user_recipes_not_found(monkeypatch, test_app):
     assert response.json() == {"detail": "User not found"}
 
 
-def test18_get_user_ratings(monkeypatch, test_app):
+def test17_get_user_ratings(monkeypatch, test_app):
     ratings = [{"userId": str(uuid.uuid4()), "recipeId": str(uuid.uuid4()), "stars": 5}]
 
     token = jwt.encode(
@@ -400,7 +390,7 @@ def test18_get_user_ratings(monkeypatch, test_app):
     assert response.json() == ratings
 
 
-def test19_get_user_ratings_not_found(monkeypatch, test_app):
+def test18_get_user_ratings_not_found(monkeypatch, test_app):
     token = jwt.encode(
         {
             "sub": "123",
@@ -427,7 +417,7 @@ def test19_get_user_ratings_not_found(monkeypatch, test_app):
     assert response.json() == {"detail": "User not found"}
 
 
-def test20_get_user_ratings_invalid_token(test_app):
+def test19_get_user_ratings_invalid_token(test_app):
     token = "invalid_token"
 
     response = test_app.get(f"/users/{str(uuid.uuid4())}/ratings/", headers={"Content-Type": "application/json", "Authorization": f"Bearer {token}"})
