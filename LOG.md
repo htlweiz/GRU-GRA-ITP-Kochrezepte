@@ -75,9 +75,9 @@
 1. Gruber
 
 - Soll: Unit tests ingredients, ratings, preparation steps, spezielle Routen
-- Ist:
+- Ist: Unit tests ingredients, ratings, preparation steps, spezielle Routen
   
 2. Grabner
 
 - Soll: User Profile Page
-- Ist:
+- Ist: User Profile Page, add recipe
