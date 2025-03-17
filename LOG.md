@@ -88,7 +88,7 @@
 1. Gruber
 
 - Soll: Unit tests, spezielle Routen
-- Ist:
+- Ist: Unit tests
 
 3. Grabner
 
