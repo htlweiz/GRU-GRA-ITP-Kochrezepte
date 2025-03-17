@@ -81,3 +81,15 @@
 
 - Soll: User Profile Page
 - Ist: User Profile Page, add recipe
+
+
+## 17.03
+
+1. Gruber
+
+- Soll: Unit tests, spezielle Routen
+- Ist:
+
+3. Grabner
+
+- Nicht da
