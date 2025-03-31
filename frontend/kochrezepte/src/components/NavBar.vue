@@ -1,6 +1,6 @@
 <template>
   <nav class="navbar">
-    <router-link to="/" class="logo">Schmeckify</router-link>
+    <router-link to="/home" class="logo">Schmeckify</router-link>
     <ul>
       <li><router-link to="/home">Home</router-link></li>
       <li><router-link to="/contact">Contact</router-link></li>
