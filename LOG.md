@@ -100,8 +100,8 @@
 1. Gruber
 
 - Soll: Spezielle Routen in Abstimmug mit Grabner
-- Ist:
+- Ist: Spezielle Routen in Abstimmug mit Grabner
 2. Grabner
 
 - Soll: Add recipe page
-- Ist:
+- Ist: Add recipe page
