@@ -121,6 +121,7 @@ export default {
             .then((response) => {
                 this.submitIngredients(response.data.recipeId);
                 this.submitPreparationSteps(response.data.recipeId);
+                $toast.success('Recipe created successfully!');
                 this.resetForm();
             })
             .catch(error => console.error(error));

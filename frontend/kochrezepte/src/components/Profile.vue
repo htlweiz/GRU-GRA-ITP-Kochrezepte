@@ -1,100 +1,133 @@
 <template>
     <div class="profile-container">
-        <div class="profile">
-            <User size="50" />
-            <h2>{{ user.firstName }} {{ user.lastName }}</h2>
-            <p>{{ user.email }}</p>
-            <button class="logout-btn" @click="LogOut">Log Out</button>
-        </div>
-        <div>
-            <button @click="AddRecipe">Add Recipe</button>
-        </div>
-        <div class="recipes">
-            <RecipeCard 
-                v-for="recipe in recipes" 
-                :key="recipe.recipeId" 
-                :uuid="recipe.recipeId" 
-                :picUrl="recipe.imagePath" 
-                :recipeName="recipe.title" 
-                :recipeDesc="recipe.description" 
-                :creator="recipe.userName" 
-                :cookingTime="recipe.cookingTime" 
-                :preparationTime="recipe.preparationTime" 
-                :stars="recipe.stars" 
-                :ratingsCount="recipe.ratingAmount"
-                :isCreator="recipe.isCreator"
-            />
-        </div>
+      <div class="profile">
+        <User size="50" />
+        <h2>{{ user.firstName }} {{ user.lastName }}</h2>
+        <p>{{ user.email }}</p>
+        <button class="logout-btn" @click="LogOut">Log Out</button>
+      </div>
+  
+      <div class="actions">
+        <button @click="AddRecipe">Add Recipe</button>
+      </div>
+  
+      <div class="recipes">
+        <RecipeCard 
+          v-for="recipe in recipes" 
+          :key="recipe.recipeId" 
+          :uuid="recipe.recipeId" 
+          :picUrl="recipe.imagePath" 
+          :recipeName="recipe.title" 
+          :recipeDesc="recipe.description" 
+          :creator="recipe.userName" 
+          :cookingTime="recipe.cookingTime" 
+          :preparationTime="recipe.preparationTime" 
+          :stars="recipe.stars" 
+          :ratingsCount="recipe.ratingAmount"
+          :isCreator="recipe.isCreator"
+        />
+      </div>
+  
+      <div class="pagination">
+        <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1">Prev</button>
+        <span>Page {{ currentPage }} of {{ totalPages }}</span>
+        <button @click="changePage(currentPage + 1)" :disabled="currentPage === totalPages">Next</button>
+      </div>
     </div>
-</template>
+  </template>
+  
 
-<script>
-import { LogOut, User } from 'lucide-vue-next';
-import RecipeCard from './RecipeCard.vue';
-import axios from 'axios';
-
-const USERAPIURL = import.meta.env.VITE_BACKEND_API_URL + `/users/`;
-const APIURL = import.meta.env.VITE_BACKEND_API_URL + `/recipes/public/`;
-
-export default {
+  <script>
+  import { LogOut, User } from 'lucide-vue-next';
+  import RecipeCard from './RecipeCard.vue';
+  import axios from 'axios';
+  import { ref, computed } from 'vue';
+  
+  const USERAPIURL = import.meta.env.VITE_BACKEND_API_URL + `/users/`;
+  const APIURL = import.meta.env.VITE_BACKEND_API_URL + `/recipes/public/`;
+  
+  export default {
     props: ['id'],
     components: {
-        RecipeCard,
-        User
+      RecipeCard,
+      User
     },
-    data() {
-        return {
-            user: {
-                firstName: '',
-                lastName: '',
-                email: ''
-            },
-            recipes: [],
-            token: localStorage.getItem('token')
-        };
-    },
-    methods: {
-        async getUser() {
-            try {
-                const response = await axios.get(USERAPIURL + this.id, {
-                    headers: { "Authorization": `Bearer ${this.token}` }
-                });
-                this.user = response.data;
-            } catch (error) {
-                console.error('Error fetching user:', error);
-            }
-        },
-        async getRecipes() {
-            try {
-                const response = await axios.get(APIURL + this.id, {
-                    headers: { "Authorization": `Bearer ${this.token}` }
-                });
-                this.recipes = response.data.items;
-                this.recipes.forEach(recipe => {
-                    recipe.isCreator = recipe.userId === localStorage.getItem('userId');
-                });
-            } catch (error) {
-                console.error('Error fetching recipes:', error);
-            }
-        },
-        LogOut() {
-            localStorage.removeItem('token');
-            localStorage.removeItem('userId');
-            localStorage.removeItem('username');
-            localStorage.removeItem('email');
-            this.$router.push('/home');
-        },
-        AddRecipe() {
-            this.$router.push('/add-recipe');
+    setup(props) {
+      const user = ref({ firstName: '', lastName: '', email: '' });
+      const recipes = ref([]);
+      const token = localStorage.getItem('token');
+  
+      const currentPage = ref(1);
+      const pageSize = ref(3);
+      const totalItems = ref(0);
+  
+      const totalPages = computed(() => Math.ceil(totalItems.value / pageSize.value));
+  
+      const getUser = async () => {
+        try {
+          const response = await axios.get(USERAPIURL + props.id, {
+            headers: { "Authorization": `Bearer ${token}` }
+          });
+          user.value = response.data;
+        } catch (error) {
+          console.error('Error fetching user:', error);
         }
-    },
-    mounted() {
-        this.getUser();
-        this.getRecipes();
+      };
+  
+      const getRecipes = async () => {
+        try {
+          const response = await axios.get(APIURL + props.id, {
+            headers: { "Authorization": `Bearer ${token}` },
+            params: {
+              page: currentPage.value,
+              size: pageSize.value
+            }
+          });
+          recipes.value = response.data.items;
+          totalItems.value = response.data.total;
+          recipes.value.forEach(recipe => {
+            recipe.isCreator = recipe.userId === localStorage.getItem('userId');
+          });
+        } catch (error) {
+          console.error('Error fetching recipes:', error);
+        }
+      };
+  
+      const changePage = (newPage) => {
+        if (newPage >= 1 && newPage <= totalPages.value) {
+          currentPage.value = newPage;
+          getRecipes();
+        }
+      };
+  
+      const LogOut = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('username');
+        localStorage.removeItem('email');
+        window.location.href = '/home';
+      };
+  
+      const AddRecipe = () => {
+        window.location.href = '/add-recipe';
+      };
+  
+      getUser();
+      getRecipes();
+  
+      return {
+        user,
+        recipes,
+        currentPage,
+        totalPages,
+        changePage,
+        LogOut,
+        AddRecipe
+      };
     }
-};
-</script>
-
+  };
+  </script>
+  
 <style scoped>
 .profile-container {
     display: flex;

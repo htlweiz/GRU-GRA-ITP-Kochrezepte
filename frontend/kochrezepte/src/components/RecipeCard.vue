@@ -1,6 +1,5 @@
 <template>
   <div class="card">
-    <img :src="picUrl"/>
     <h2>{{recipeName}}</h2>
     <div class="star-rating">
     <star-rating :rating="stars" :read-only="true" :round-start-rating="false" :max-rating="5" :animate="true" :star-size="20"></star-rating>
