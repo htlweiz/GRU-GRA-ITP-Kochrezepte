@@ -101,7 +101,22 @@
 
 - Soll: Spezielle Routen in Abstimmug mit Grabner
 - Ist: Spezielle Routen in Abstimmug mit Grabner
+  
 2. Grabner
 
 - Soll: Add recipe page
 - Ist: Add recipe page
+
+
+## 07.04
+
+1. Gruber
+
+- Soll: Spezielle Routen in Abstimmug mit Grabner
+- Ist:
+  
+2. Grabner
+
+- Soll: Recipes bearbeiten und löschen, evtl. Pagination
+- Ist:
+  
