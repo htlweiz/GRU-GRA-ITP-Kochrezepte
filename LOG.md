@@ -113,10 +113,10 @@
 1. Gruber
 
 - Soll: Spezielle Routen in Abstimmug mit Grabner
-- Ist:
+- Ist: Spezielle Routen in Abstimmug mit Grabner & Abgabe
   
 2. Grabner
 
 - Soll: Recipes bearbeiten und löschen, evtl. Pagination
-- Ist:
+- Ist: Recipes bearbeiten und löschen, evtl. Pagination & Abgabe
   
