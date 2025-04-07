@@ -21,7 +21,8 @@
                 :cookingTime="recipe.cookingTime" 
                 :preparationTime="recipe.preparationTime" 
                 :stars="recipe.stars" 
-                :ratingsCount="recipe.ratingAmount" 
+                :ratingsCount="recipe.ratingAmount"
+                :isCreator="recipe.isCreator"
             />
         </div>
     </div>
@@ -69,6 +70,9 @@ export default {
                     headers: { "Authorization": `Bearer ${this.token}` }
                 });
                 this.recipes = response.data.items;
+                this.recipes.forEach(recipe => {
+                    recipe.isCreator = recipe.userId === localStorage.getItem('userId');
+                });
             } catch (error) {
                 console.error('Error fetching recipes:', error);
             }

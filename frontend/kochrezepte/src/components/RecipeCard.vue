@@ -1,4 +1,3 @@
-
 <template>
   <div class="card">
     <img :src="picUrl"/>
@@ -20,15 +19,22 @@
     </div>
 
     <button class="button" @click="navigateToRecipe">View Recipe</button>
-    
-    
-    </div>
+
+    <template v-if="isCreator">
+      <button class="button delete-button" @click="deleteRecipe">Delete</button>
+      <button class="button update-button" @click="updateRecipe">Update</button>
+    </template>
+
+  </div>
 </template>
 
 <script setup>
 import '../style.css'
 import StarRating from 'vue-star-rating'
 import { User, Clock } from 'lucide-vue-next'
+import axios from 'axios';
+
+const APIURL = import.meta.env.VITE_BACKEND_API_URL + `/recipes/`;
 
 const props = defineProps({
   uuid: String,
@@ -39,7 +45,8 @@ const props = defineProps({
   cookingTime: Number,
   preparationTime: Number,
   stars: Number,
-  ratingsCount: Number
+  ratingsCount: Number,
+  isCreator: Boolean
 });
 
 const truncate = (text, length) => {
@@ -50,6 +57,28 @@ const navigateToRecipe = () => {
   window.location.href = '/recipe/' + props.uuid;
 
 }
+
+const deleteRecipe = () => {
+  if (confirm('Are you sure you want to delete this recipe?')) {
+
+    const response = axios.delete(APIURL + props.uuid, {
+      headers: { "Authorization": `Bearer ${localStorage.getItem('token')}` }
+    })
+      .then(response => {
+        console.log('Recipe deleted:', response.data);
+        window.location.reload();
+      })
+      .catch(error => {
+        console.error('Error deleting recipe:', error);
+      });
+    console.log('Recipe deleted:', props.uuid);
+  }
+};
+
+const updateRecipe = () => {
+  // Logic to navigate to the update recipe page
+  window.location.href = '/update-recipe/' + props.uuid;
+};
 </script>
 
 <style scoped>
@@ -116,6 +145,22 @@ const navigateToRecipe = () => {
   margin-bottom: 5px;
 }
 
+.delete-button {
+  background-color: #dc3545;
+  margin-left: 10px;
+}
 
+.delete-button:hover {
+  background-color: #c82333;
+}
+
+.update-button {
+  background-color: #ffc107;
+  margin-left: 10px;
+}
+
+.update-button:hover {
+  background-color: #e0a800;
+}
 
 </style>

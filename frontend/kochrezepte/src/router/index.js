@@ -4,6 +4,7 @@ import Home from '../components/Home.vue';
 import RecipeDetailView from '../components/RecipeDetail.vue';
 import Profile from '../components/Profile.vue';
 import AddRecipe from '../components/AddRecipe.vue';
+import UpdateRecipe from '../components/UpdateRecipe.vue';
 
 const routes = [
   {
@@ -34,6 +35,11 @@ const routes = [
     path: '/add-recipe',
     component: AddRecipe
 
+  },
+  {
+    path: '/update-recipe/:id',
+    component: UpdateRecipe,
+    props: true
   }
 ];
 

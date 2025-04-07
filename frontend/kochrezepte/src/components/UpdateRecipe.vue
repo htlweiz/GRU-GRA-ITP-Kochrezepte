@@ -1,8 +1,8 @@
 <template>
-    <div class="add-recipe">
-        <h2>Add a New Recipe</h2>
-        <form @submit.prevent="submitRecipe">
-            <div>
+    <div class="update-recipe">
+        <h2>Update Recipe</h2>
+        <form @submit.prevent="updateRecipe">
+            <div>   
                 <label for="title">Title:</label>
                 <input type="text" v-model="recipe.title" id="title" required />
             </div>
@@ -23,7 +23,7 @@
             </div>
 
             <div>
-                <label>Add Ingredients:</label>
+                <label>Update Ingredients:</label>
                 <multiselect
                     v-model="selectedIngredients"
                     :options="ingredients"
@@ -65,11 +65,9 @@
                 </ul>
             </div>
 
-            
             <button type="button" @click="addStep">Add Step</button>
 
             <div class="preparation-steps">
-                
                 <div v-for="(step, index) in preparation_steps" :key="index">
                     <label>Step {{ index + 1 }}</label>
                     <textarea v-model="step.description" placeholder="Enter step description"></textarea>
@@ -79,7 +77,7 @@
                 </div>
             </div>
 
-            <button type="submit">Add Recipe</button>
+            <button type="submit">Update Recipe</button>
         </form>
     </div>
 </template>
@@ -94,6 +92,8 @@ import { Plus, X } from "lucide-vue-next";
 const $toast = useToast();
 const APIURL = import.meta.env.VITE_BACKEND_API_URL;
 export default {
+    props: ['id'],
+    name: 'UpdateRecipe',
     components: { Multiselect, X, Plus },
     data() {
         return {
@@ -109,57 +109,94 @@ export default {
             selectedIngredients: [],
             preparation_steps: [{ description: '', stepNumber: 1, recipeId: '' }],
             units: [],
-            token: localStorage.getItem('token')
+            token: localStorage.getItem('token'),
+            recipeId: null
         };
     },
     methods: {
-        submitRecipe() {
-            console.log('Submitting recipe:', this.recipe);
-            axios.post(APIURL + `/recipes/`, this.recipe, {
+        updateRecipe() {
+            console.log('Updating recipe:', this.recipe);
+            console.log(this.token);
+            axios.put(APIURL + `/recipes/` + this.recipeId, this.recipe, {
+                headers: { "Authorization": `Bearer ${this.token}` }
+            })
+            .then(() => {
+                this.updateIngredients();
+                this.updatePreparationSteps();
+                $toast.success('Recipe updated successfully!');
+            })
+            .catch(error => console.error(error));
+        },
+        updateIngredients() {
+            console.log('Updating ingredients for recipe ID:', this.recipeId);
+            this.selectedIngredients.forEach(ingredient => {
+                axios.post(APIURL + `/recipes/` + this.recipeId + `/ingredient/` + ingredient.ingredientId, {
+                    amount: ingredient.amount,
+                    unit: ingredient.unit
+                }, {
+                    headers: { "Authorization": `Bearer ${this.token}` }
+                })
+                .then(() => {
+                    console.log('Ingredient updated:', ingredient);
+                })
+                .catch(error => console.error(error));
+            });
+        },
+        updatePreparationSteps() {
+            console.log('Updating preparation steps:', this.preparation_steps);
+            this.preparation_steps.forEach(step => {
+                if (step.stepId == undefined)
+                {
+                    console.log('Creating new preparation step:', step);
+                    axios.post(APIURL + `/preparation_steps/`, {
+                        description: step.description,
+                        stepNumber: step.stepNumber,
+                        recipeId: this.recipeId
+                    }, {
+                        headers: { "Authorization": `Bearer ${this.token}` }
+                    })
+                }
+                axios.put(APIURL + `/preparation_steps/` + step.stepId, step, {
+                    headers: { "Authorization": `Bearer ${this.token}` }
+                })
+                .then(() => {
+                    console.log('Preparation step updated:', step);
+                })
+                .catch(error => console.error(error));
+            });
+        },
+        fetchRecipe() {
+            axios.get(APIURL + `/recipes/` + this.recipeId, {
                 headers: { "Authorization": this.token }
             })
             .then((response) => {
-                this.submitIngredients(response.data.recipeId);
-                this.submitPreparationSteps(response.data.recipeId);
-                this.resetForm();
+                this.recipe = response.data;
+                this.fetchIngredients();
+                this.fetchPreparationSteps();
+
+                console.log('Fetched recipe:', this.recipe);
             })
             .catch(error => console.error(error));
-
         },
-        submitIngredients(id) {
-            console.log('Submitting ingredients for recipe ID:', id);
-            console.log('Selected ingredients:', this.selectedIngredients);
-            console.log(this.selectedIngredients)
-            this.selectedIngredients.forEach(ingredient => {
-                const ingredientsubmit = {
-                    amount: ingredient.amount,
-                    unit: ingredient.unit
-                };
-                axios.post(APIURL + `/recipes/` + id + `/ingredient/` + ingredient.ingredientId + `/?amount=` + ingredient.amount + `&unit=`+ ingredient.unit , {
-                    headers: { "Authorization": this.token }
-                })
-                .then(() => {
-                    console.log('Ingredient submitted:', ingredient);
-                })
-                .catch(error => console.error(error));
-            });
+        fetchPreparationSteps() {
+            axios.get(APIURL + `/recipes/` + this.recipeId + `/preparation_steps/`, {
+                headers: { "Authorization": this.token }
+            })
+            .then((response) => {
+                this.preparation_steps = response.data;
+                console.log('Fetched preparation steps:', this.preparation_steps);
+            })
+            .catch(error => console.error(error));
         },
-        submitPreparationSteps(id) {
-            console.log('Preparation steps:', this.preparation_steps);
-            const preparation_steps = this.preparation_steps.map(step => ({
-                description: step.description,
-                stepNumber: step.stepNumber,
-                recipeId: id
-            }));
-            preparation_steps.forEach(step => {
-                axios.post(APIURL + `/preparation_steps/`, step ,{
-                    headers: { "Authorization": this.token }
-                })
-                .then(() => {
-                    console.log('Preparation step submitted:', step);
-                })
-                .catch(error => console.error(error));
-            });
+        fetchIngredients() {
+            axios.get(APIURL + `/recipes/` + this.recipeId + `/ingredients/`, {
+                headers: { "Authorization": this.token }
+            })
+            .then((response) => {
+                this.selectedIngredients = response.data;
+                console.log('Fetched ingredients:', this.selectedIngredients);
+            })
+            .catch(error => console.error(error));
         },
         getIngredients() {
             axios.get(APIURL + `/ingredients/`)
@@ -191,11 +228,6 @@ export default {
             this.preparation_steps.splice(index, 1);
             this.preparation_steps.forEach((step, i) => step.stepNumber = i + 1);
         },
-        resetForm() {
-            this.recipe = { title: '', description: '', cookingTime: 0, preparationTime: 0 };
-            this.selectedIngredients = [];
-            this.preparation_steps = [{ description: '', stepNumber: 1 }];
-        },
         getUnits() {
             return axios.get(APIURL + `/units/`)
                 .then((response) => {
@@ -205,17 +237,15 @@ export default {
         }
     },
     mounted() {
+        this.recipeId = this.$route.params.id;
+        this.fetchRecipe();
         this.getIngredients();
-        this.getUnits()
+        this.getUnits();
     }
 };
 </script>
-
-<style src="vue-multiselect/dist/vue-multiselect.css"></style>
-
 <style scoped>
-
-.add-recipe {
+.update-recipe {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -227,7 +257,7 @@ export default {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.add-recipe h2 {
+.update-recipe h2 {
     text-align: center;
     margin-bottom: 20px;
     color: #333;
@@ -235,20 +265,20 @@ export default {
     font-weight: bold;
 }
 
-.add-recipe form div {
+.update-recipe form div {
     margin-bottom: 15px;
     width: 100%;
 }
 
-.add-recipe label {
+.update-recipe label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
     color: #555;
 }
 
-.add-recipe input,
-.add-recipe textarea {
+.update-recipe input,
+.update-recipe textarea {
     width: calc(100% - 20px);
     padding: 10px;
     border: 1px solid #ddd;
@@ -259,7 +289,7 @@ export default {
     font-size: 14px;
 }
 
-.add-recipe button {
+.update-recipe button {
     padding: 10px 20px;
     background-color: #28a745;
     color: white;
@@ -270,7 +300,7 @@ export default {
     transition: background-color 0.3s ease;
 }
 
-.add-recipe button:hover {
+.update-recipe button:hover {
     background-color: #218838;
 }
 
@@ -349,4 +379,5 @@ ul li select {
 .preparation-steps button:hover {
     background-color: #c82333;
 }
+
 </style>
