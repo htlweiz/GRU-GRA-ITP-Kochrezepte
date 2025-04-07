@@ -43,19 +43,6 @@ def test02_create_ingredient_already_exists(monkeypatch, test_app):
     assert response.json() == {"detail": "Ingredient already exists"}
 
 
-def test03_create_ingredient_invalid_token(monkeypatch, test_app):
-    ing = {"name": "Test Ingredient"}
-
-    async def mock_validate_token(token):
-        return None
-    
-    monkeypatch.setattr(ingredients, "validate_token", mock_validate_token)
-
-    response = test_app.post("/ingredients/", data=json.dumps(ing), headers={"Content-Type": "application/json", "Authorization": "Bearer token"})
-
-    assert response.status_code == 401
-    assert response.json() == {"detail": "Invalid token"}
-
 
 def test04_read_ingredient(monkeypatch, test_app):
     ing_id = str(uuid.uuid4())

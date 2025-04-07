@@ -436,3 +436,31 @@ def test25_get_public_recipes(monkeypatch, test_app):
 
     assert response.status_code == 200
     assert response.json() == Page(items=recipes_list, page=1, pages=None, size=10, total=1).dict()
+
+
+def test25_get_public_recipes_user(monkeypatch, test_app):
+    recipes_list = [{"recipeId": str(uuid.uuid4()), "title": "Test Recipe", "description": "Test Description", "cookingTime": 30, "preparationTime": 15, "imagePath": "test.jpg", "userId": "testuser", "stars": 3, "ratingAmount": 1, "userName": "chef"}]
+    
+    async def mock_get_public_recipes_user(userid):
+        return Page(items=recipes_list, page=1, pages=None, size=10, total=1)
+    
+    monkeypatch.setattr(recipes.crud, "get_public_recipes_user", mock_get_public_recipes_user)
+    
+    response = test_app.get(f"/recipes/public/{str(uuid.uuid4())}?page=1&size=2", headers={"Content-Type": "application/json"})
+
+    assert response.status_code == 200
+    assert response.json() == Page(items=recipes_list, page=1, pages=None, size=10, total=1).dict()
+
+
+def test_26_get_public_recipes(monkeypatch, test_app):
+    recipes_list = [{"recipeId": str(uuid.uuid4()), "title": "Test Recipe", "description": "Test Description", "cookingTime": 30, "preparationTime": 15, "imagePath": "test.jpg", "userId": "testuser", "stars": 3, "ratingAmount": 1, "userName": "chef"}]
+    
+    async def mock_get_public_recipes():
+        return Page(items=recipes_list, page=1, pages=None, size=10, total=1)
+    
+    monkeypatch.setattr(recipes.crud, "get_public_recipes", mock_get_public_recipes)
+    
+    response = test_app.get(f"/recipes/public/?page=1&size=2", headers={"Content-Type": "application/json"})
+
+    assert response.status_code == 200
+    assert response.json() == Page(items=recipes_list, page=1, pages=None, size=10, total=1).dict()

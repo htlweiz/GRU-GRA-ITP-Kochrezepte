@@ -10,7 +10,7 @@ router = APIRouter()
 
 
 @router.post("/ingredients/", response_model=IngredientDB, status_code=201)
-async def create_ingredient(ingredient: IngredientSchema, token: str = Depends(oauth2_scheme)):
+async def create_ingredient(ingredient: IngredientSchema):
     """
     Create a new ingredient in the database.
 
@@ -21,9 +21,6 @@ async def create_ingredient(ingredient: IngredientSchema, token: str = Depends(o
         Ingredient: The created ingredient object.
     """
 
-    if not await validate_token(token):
-        raise HTTPException(status_code=401, detail="Invalid token")
-    
     db_ingredient = await crud.create_ingredient(ingredient)
     if not db_ingredient:
         raise HTTPException(status_code=409, detail="Ingredient already exists")
